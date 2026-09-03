@@ -45,10 +45,18 @@ sudo -u postgres psql
 CREATE DATABASE hq_gestion;
 CREATE USER hq_gestion WITH PASSWORD 'choisir_un_mot_de_passe_solide';
 GRANT ALL PRIVILEGES ON DATABASE hq_gestion TO hq_gestion;
+\c hq_gestion
+GRANT ALL ON SCHEMA public TO hq_gestion;
 \q
 ```
 
 Noter le mot de passe choisi — il va dans `DATABASE_URL` à l'étape 6.
+
+> Sur PostgreSQL 15 et plus récent, le schéma `public` n'accorde plus le droit
+> `CREATE` à tout le monde par défaut — sans la ligne `GRANT ALL ON SCHEMA
+> public`, `npm run migrate` échoue avec `droit refusé pour le schéma public`.
+> Le `\c hq_gestion` avant cette ligne est indispensable : la permission doit
+> être accordée en étant connecté à la base `hq_gestion`, pas à `postgres`.
 
 ## 5. Dépendances
 
