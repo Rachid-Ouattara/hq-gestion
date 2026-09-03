@@ -1,0 +1,60 @@
+# Gabarit Nginx pour gestion.headquaters.org.
+# À copier vers /etc/nginx/sites-available/gestion.headquaters.org, puis adapter
+# le chemin de `root` ci-dessous à l'emplacement réel du dépôt sur le VPS.
+# Voir docs/DEPLOIEMENT.md pour la procédure complète (activation, certbot, etc.)
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name gestion.headquaters.org;
+
+    # Fichiers statiques du build Vite (npm run build --workspace web)
+    root /var/www/hq-gestion/web/dist;
+    index index.html;
+
+    # Fichiers hashés par Vite (assets/*.js, *.css) : cache long, le nom change à chaque build.
+    location /assets/ {
+        try_files $uri =404;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+
+    # Service worker et manifest : jamais mis en cache, doivent toujours être frais.
+    location = /sw.js {
+        try_files $uri =404;
+        add_header Cache-Control "no-cache";
+    }
+
+    # Flux temps réel des notifications (Server-Sent Events) : bloc dédié, plus
+    # spécifique que /api/ ci-dessous — la mise en tampon de Nginx casserait la
+    # livraison instantanée si elle restait activée sur cette route précise.
+    location /api/notifications/stream {
+        proxy_pass http://127.0.0.1:4000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_buffering off;
+        proxy_cache off;
+        chunked_transfer_encoding off;
+        proxy_read_timeout 3600s;
+    }
+
+    # Reste de l'API.
+    location /api/ {
+        proxy_pass http://127.0.0.1:4000;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # SPA : toute route inconnue du serveur renvoie index.html, React Router
+    # prend le relais côté client (indispensable pour un rechargement sur une
+    # route comme /modules/rh/employes/123).
+    location / {
+        try_files $uri /index.html;
+        add_header Cache-Control "no-cache";
+    }
+}

@@ -1,0 +1,93 @@
+import { useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
+import { get, post } from '../../lib/api.js';
+import { useAuth } from '../../lib/auth.jsx';
+import { useToast } from '../../lib/toast.jsx';
+import DataTable from '../../components/DataTable.jsx';
+import SlideOver from '../../components/SlideOver.jsx';
+
+const EMPTY_FORM = { compte_id: '', source: '', montant: '0', reference: '' };
+
+export default function Recettes() {
+  const { can } = useAuth();
+  const toast = useToast();
+  const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [comptes, setComptes] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState(EMPTY_FORM);
+
+  const canCreate = can('finance', 'create');
+
+  const load = () => get('/finance/recettes').then(setRows).catch((e) => toast.error(e.message)).finally(() => setLoading(false));
+  useEffect(() => { load(); }, []);
+  useEffect(() => { get('/finance/comptes?is_active=true').then(setComptes).catch(() => {}); }, []);
+
+  const submit = async () => {
+    try {
+      await post('/finance/recettes', { ...form, montant: Number(form.montant) });
+      setForm(EMPTY_FORM);
+      setOpen(false);
+      toast.success('Enregistré');
+      load();
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
+  const columns = [
+    { key: 'numero', label: 'N°' },
+    { key: 'compte_libelle', label: 'Compte', render: (r) => `${r.compte_code} — ${r.compte_libelle}` },
+    { key: 'source', label: 'Source' },
+    { key: 'date_recette', label: 'Date', render: (r) => new Date(r.date_recette).toLocaleDateString('fr-FR') },
+    { key: 'montant', label: 'Montant', render: (r) => Number(r.montant).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) },
+  ];
+
+  return (
+    <div>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-slate-500">{rows.length} recette(s)</p>
+        {canCreate && (
+          <button className="btn-primary" onClick={() => setOpen(true)}>
+            <Plus size={18} /> Nouvelle recette
+          </button>
+        )}
+      </div>
+
+      <DataTable columns={columns} rows={rows} loading={loading} emptyLabel="Aucune recette enregistrée." />
+
+      <SlideOver open={open} onClose={() => setOpen(false)} title="Nouvelle recette">
+        <div className="space-y-3">
+          <div>
+            <label className="label">Compte</label>
+            <select className="input" value={form.compte_id} onChange={(e) => setForm({ ...form, compte_id: e.target.value })}>
+              <option value="">Sélectionner…</option>
+              {comptes.map((c) => (
+                <option key={c.id} value={c.id}>{c.code} — {c.libelle}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Source</label>
+            <input className="input" placeholder="Ex. Subvention, vente de matériel…" value={form.source} onChange={(e) => setForm({ ...form, source: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">Montant</label>
+            <input className="input" type="number" min="0" step="0.01" value={form.montant} onChange={(e) => setForm({ ...form, montant: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">Référence</label>
+            <input className="input" value={form.reference} onChange={(e) => setForm({ ...form, reference: e.target.value })} />
+          </div>
+          <button
+            className="btn-primary w-full"
+            onClick={submit}
+            disabled={!form.compte_id || !form.source.trim() || Number(form.montant) <= 0}
+          >
+            Enregistrer
+          </button>
+        </div>
+      </SlideOver>
+    </div>
+  );
+}

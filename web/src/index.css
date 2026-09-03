@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-hq-mist text-slate-800 antialiased;
+  }
+  h1 {
+    font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-hq-blue text-white hover:bg-hq-blue-dark;
+  }
+  .btn-accent {
+    @apply btn bg-hq-orange text-white hover:bg-hq-orange-dark;
+  }
+  .btn-ghost {
+    @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+  }
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+  .input {
+    @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-hq-cyan focus:ring-2 focus:ring-hq-cyan/20;
+  }
+  .label {
+    @apply mb-1 block text-sm font-medium text-slate-600;
+  }
+}

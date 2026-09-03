@@ -1,0 +1,1050 @@
+<title>Guide HQ Gestion</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap');
+
+  :root {
+    --paper: #F5F6F9;
+    --surface: #FFFFFF;
+    --surface-2: #EEF1F6;
+    --ink: #1C2430;
+    --ink-soft: #54607A;
+    --ink-faint: #8994AC;
+    --line: #DCE1EA;
+    --accent: #2F5C8A;
+    --accent-ink: #1E3E5E;
+    --accent-tint: #E6EDF5;
+    --accent-warm: #C1622D;
+    --accent-warm-tint: #FBEDE3;
+    --formation: #C0435B;
+    --formation-tint: #FAEAEE;
+    --rh: #3E8F5C;
+    --rh-tint: #E9F5EE;
+    --prospection: #A9791E;
+    --prospection-tint: #F6EFDD;
+    --code-bg: #EDF1F7;
+    --shadow: 0 1px 2px rgba(28,36,48,0.04), 0 6px 20px rgba(28,36,48,0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #14181F;
+      --surface: #1B212B;
+      --surface-2: #232A36;
+      --ink: #E8EBF1;
+      --ink-soft: #AEB8CC;
+      --ink-faint: #7885A0;
+      --line: #2C3444;
+      --accent: #7FADDE;
+      --accent-ink: #CFE1F5;
+      --accent-tint: #22344A;
+      --accent-warm: #E29A6C;
+      --accent-warm-tint: #3A2A1E;
+      --formation: #E58BA0;
+      --formation-tint: #3A2530;
+      --rh: #7FC69B;
+      --rh-tint: #1E3428;
+      --prospection: #D9B368;
+      --prospection-tint: #3A3220;
+      --code-bg: #232A36;
+      --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 6px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #14181F;
+    --surface: #1B212B;
+    --surface-2: #232A36;
+    --ink: #E8EBF1;
+    --ink-soft: #AEB8CC;
+    --ink-faint: #7885A0;
+    --line: #2C3444;
+    --accent: #7FADDE;
+    --accent-ink: #CFE1F5;
+    --accent-tint: #22344A;
+    --accent-warm: #E29A6C;
+    --accent-warm-tint: #3A2A1E;
+    --formation: #E58BA0;
+    --formation-tint: #3A2530;
+    --rh: #7FC69B;
+    --rh-tint: #1E3428;
+    --prospection: #D9B368;
+    --prospection-tint: #3A3220;
+    --code-bg: #232A36;
+    --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 6px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-weight: 600;
+    color: var(--ink);
+    text-wrap: balance;
+    line-height: 1.2;
+  }
+  a { color: var(--accent); }
+  code { font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+
+  /* ---------- shell ---------- */
+  .shell {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  @media (max-width: 920px) {
+    .shell { grid-template-columns: 1fr; }
+    .toc { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
+  }
+
+  /* ---------- sidebar TOC ---------- */
+  .toc {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    padding: 28px 20px 40px;
+    border-right: 1px solid var(--line);
+  }
+  .toc-brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .toc-brand .mark {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: var(--accent-ink);
+  }
+  .toc-sub {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    margin: 0 0 24px;
+    letter-spacing: 0.02em;
+  }
+  .toc-group { margin-bottom: 4px; }
+  .toc-group-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 14px 8px 6px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+  .toc a {
+    display: block;
+    padding: 6px 8px 6px 24px;
+    font-size: 0.87rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-radius: 6px;
+  }
+  .toc a:hover { background: var(--surface-2); color: var(--ink); }
+
+  /* ---------- main content ---------- */
+  main { padding: 40px 56px 120px; min-width: 0; }
+  @media (max-width: 640px) { main { padding: 28px 20px 80px; } }
+
+  .cover {
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  .cover .eyebrow {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .cover h1 {
+    font-size: clamp(2rem, 4vw, 2.7rem);
+    margin: 0 0 12px;
+    max-width: 16ch;
+  }
+  .cover p.lede {
+    max-width: 62ch;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    margin: 0 0 20px;
+  }
+  .cover .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+  }
+  .cover .meta span {
+    background: var(--surface-2);
+    border-radius: 999px;
+    padding: 5px 12px;
+  }
+
+  section.module { margin-bottom: 64px; }
+  .module-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px 24px;
+    border-radius: 12px;
+    margin-bottom: 28px;
+    scroll-margin-top: 24px;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+  .module-head .num {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 2.1rem;
+    line-height: 1;
+    opacity: 0.35;
+  }
+  .module-head h2 { font-size: 1.7rem; margin: 0 0 4px; }
+  .module-head p { margin: 0; color: var(--ink-soft); font-size: 0.95rem; max-width: 60ch; }
+
+  .module-formation .module-head { background: var(--formation-tint); }
+  .module-formation .num, .module-formation h2 { color: var(--formation); }
+  .module-rh .module-head { background: var(--rh-tint); }
+  .module-rh .num, .module-rh h2 { color: var(--rh); }
+  .module-prospection .module-head { background: var(--prospection-tint); }
+  .module-prospection .num, .module-prospection h2 { color: var(--prospection); }
+
+  h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
+
+  h3 {
+    font-size: 1.2rem;
+    margin: 40px 0 6px;
+    padding-left: 14px;
+    border-left: 3px solid var(--line);
+    scroll-margin-top: 24px;
+  }
+  .module-formation h3 { border-left-color: var(--formation); }
+  .module-rh h3 { border-left-color: var(--rh); }
+  .module-prospection h3 { border-left-color: var(--prospection); }
+
+  h4 {
+    font-size: 0.98rem;
+    font-weight: 600;
+    margin: 22px 0 4px;
+    color: var(--ink);
+  }
+
+  p, li { max-width: 70ch; }
+  p { margin: 10px 0; }
+  ul, ol { padding-left: 22px; margin: 10px 0; }
+  li { margin: 4px 0; }
+  li::marker { color: var(--ink-faint); }
+
+  .lede-block { color: var(--ink-soft); margin: 4px 0 16px; }
+
+  /* UI element mockups */
+  .ui {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'Public Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.82em;
+    padding: 2px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+  .ui.btn { background: var(--accent); color: #fff; }
+  .ui.btn.accent2 { background: var(--accent-warm); }
+  .ui.tab {
+    background: none;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    padding: 1px 8px;
+  }
+  .ui.field {
+    background: var(--surface-2);
+    color: var(--ink);
+    font-weight: 500;
+    border: 1px solid var(--line);
+  }
+
+  /* status pill mock */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.78em;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 999px;
+  }
+  .pill.slate { background: var(--surface-2); color: var(--ink-soft); }
+  .pill.blue { background: var(--accent-tint); color: var(--accent-ink); }
+  .pill.orange { background: var(--accent-warm-tint); color: var(--accent-warm); }
+  .pill.green { background: var(--rh-tint); color: var(--rh); }
+  .pill.red { background: #FCE8E8; color: #B23A3A; }
+  :root[data-theme="dark"] .pill.red, @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .pill.red { background: #3A2222; color: #E59B9B; } }
+
+  /* callouts */
+  .callout {
+    display: flex;
+    gap: 12px;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 18px 0;
+    font-size: 0.92rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+  .callout .tag {
+    flex: none;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .callout.tip { border-left: 3px solid var(--accent); }
+  .callout.tip .tag { color: var(--accent); }
+  .callout.warn { border-left: 3px solid var(--accent-warm); background: var(--accent-warm-tint); }
+  .callout.warn .tag { color: var(--accent-warm); }
+  .callout p { margin: 0; max-width: none; }
+
+  /* step list */
+  .steps {
+    counter-reset: step;
+    list-style: none;
+    padding-left: 0;
+    margin: 14px 0 20px;
+    display: grid;
+    gap: 10px;
+  }
+  .steps li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 34px;
+    max-width: none;
+    min-height: 22px;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--surface);
+    background: var(--ink-soft);
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+  }
+  .module-formation .steps li::before { background: var(--formation); }
+  .module-rh .steps li::before { background: var(--rh); }
+  .module-prospection .steps li::before { background: var(--prospection); }
+
+  /* tables */
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; border: 1px solid var(--line); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; background: var(--surface); }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+  tr { break-inside: avoid-page; page-break-inside: avoid; }
+  th { background: var(--surface-2); font-weight: 600; color: var(--ink-soft); font-size: 0.76rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  tr:last-child td { border-bottom: none; }
+  td { font-variant-numeric: tabular-nums; }
+
+  .flow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 14px 0 20px;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+  .flow .arrow { color: var(--ink-faint); }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0 24px; }
+  .mini-card { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); break-inside: avoid-page; page-break-inside: avoid; }
+  .mini-card h5 { margin: 0 0 4px; font-size: 0.88rem; font-family: 'Public Sans', sans-serif; font-weight: 700; }
+  .mini-card p { margin: 0; font-size: 0.84rem; color: var(--ink-soft); }
+
+  .role-tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; padding: 2px 8px; border-radius: 5px; background: var(--surface-2); color: var(--ink-soft); }
+
+  hr.soft { border: none; border-top: 1px solid var(--line); margin: 48px 0; }
+
+  footer {
+    max-width: 70ch;
+    color: var(--ink-faint);
+    font-size: 0.82rem;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  @media print {
+    .toc { display: none; }
+    .shell { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="shell">
+  <nav class="toc">
+    <div class="toc-brand"><span class="mark">HQ Gestion</span></div>
+    <p class="toc-sub">Guide d'utilisation — RH &amp; Direction</p>
+
+    <div class="toc-group">
+      <a href="#intro" style="padding-left:8px; font-weight:600; color:var(--ink);">Introduction</a>
+      <a href="#connexion" style="padding-left:8px; font-weight:600; color:var(--ink);">Connexion &amp; mot de passe oublié</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--formation)"></span>Formation &amp; Écoles</div>
+      <a href="#f-apercu">Vue d'ensemble</a>
+      <a href="#f-ecoles">Écoles partenaires</a>
+      <a href="#f-classes">Classes &amp; canevas</a>
+      <a href="#f-camps">Camps de vacances</a>
+      <a href="#f-seances">Planning des séances</a>
+      <a href="#f-rapports">Rapports de cours</a>
+      <a href="#f-maintenance">Maintenance préventive</a>
+      <a href="#f-formateur">Espace du formateur</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--rh)"></span>Ressources Humaines</div>
+      <a href="#rh-apercu">Vue d'ensemble &amp; à traiter</a>
+      <a href="#rh-dossier">Dossier du personnel</a>
+      <a href="#rh-contrats">Contrats de travail</a>
+      <a href="#rh-conges">Congés &amp; absences</a>
+      <a href="#rh-presences">Présences &amp; pointage</a>
+      <a href="#rh-paie">Paie &amp; évaluations</a>
+      <a href="#rh-formations">Formation du personnel</a>
+      <a href="#rh-recrutement">Recrutement</a>
+      <a href="#rh-entrees-sorties">Entrées &amp; sorties</a>
+      <a href="#rh-comptes">Créer un compte self-service</a>
+      <a href="#rh-espace">Espace « Mon dossier »</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--prospection)"></span>Prospection &amp; Écoles cibles</div>
+      <a href="#p-apercu">Vue d'ensemble</a>
+      <a href="#p-campagnes">Campagnes &amp; équipes terrain</a>
+      <a href="#p-ecoles">Écoles ciblées</a>
+      <a href="#p-rapports">Rapports de visite</a>
+    </div>
+
+    <div class="toc-group">
+      <a href="#notifications" style="padding-left:8px; font-weight:600; color:var(--ink);">Notifications</a>
+      <a href="#roles" style="padding-left:8px; font-weight:600; color:var(--ink);">Rôles &amp; accès</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="cover" id="intro">
+      <p class="eyebrow">Manuel d'utilisation</p>
+      <h1>Piloter Headquarters avec HQ Gestion</h1>
+      <p class="lede">
+        Ce guide s'adresse à la <strong>Direction</strong> et au <strong>responsable RH</strong>. Il couvre les trois
+        volets qui structurent l'activité de l'entreprise au quotidien : la relation avec les écoles partenaires et
+        l'enseignement sur le terrain, la gestion du personnel, et la prospection de nouvelles écoles cibles.
+      </p>
+      <div class="meta">
+        <span>3 modules couverts</span>
+        <span>Rôles concernés : Direction, Secrétaire, Admin</span>
+        <span>Connexion : e-mail + mot de passe sur l'écran d'accueil</span>
+      </div>
+    </div>
+
+    <p class="lede-block">
+      HQ Gestion organise le travail par <strong>modules</strong>, listés dans le menu de gauche. Chaque module ne
+      vous montre que les onglets et les actions que votre rôle autorise — un formateur ou un employé connecté avec
+      son propre compte ne voit qu'un espace personnel restreint (« Mon espace »), pendant que la Direction et le
+      secrétariat voient l'ensemble des données du module. Ce guide décrit d'abord la vue « gestion » (Direction /
+      secrétariat), puis l'espace self-service correspondant pour chaque module concerné.
+    </p>
+
+    <!-- ================= CONNEXION ================= -->
+    <section id="connexion">
+      <h2 style="font-size:1.5rem; margin-bottom:6px;">Connexion &amp; mot de passe oublié</h2>
+      <p class="lede-block">L'écran de connexion demande simplement l'e-mail et le mot de passe du compte.</p>
+      <p>
+        En cas d'oubli, le lien <strong>Mot de passe oublié ?</strong> sous le champ mot de passe ouvre un écran qui ne
+        demande que l'e-mail du compte. Un message de confirmation générique s'affiche systématiquement, que l'e-mail
+        existe ou non dans HQ Gestion — cela évite qu'un tiers puisse déduire quels e-mails sont enregistrés.
+      </p>
+      <ol class="steps">
+        <li>Saisissez votre e-mail sur l'écran <strong>Mot de passe oublié ?</strong> et validez.</li>
+        <li>Si le compte existe, un e-mail contenant un lien de réinitialisation arrive sous quelques instants.</li>
+        <li>Le lien ouvre un écran pour choisir un nouveau mot de passe. Il expire au bout d'une heure et ne peut servir qu'une seule fois.</li>
+      </ol>
+      <div class="callout tip">
+        <span class="tag">Bon à savoir</span>
+        <p>
+          Tant que l'envoi d'e-mails n'est pas configuré sur le serveur (phase de mise en service), le lien de
+          réinitialisation est simplement consigné dans les journaux techniques plutôt qu'envoyé par e-mail — un
+          administrateur peut alors le récupérer à la demande. Une fois le serveur d'e-mail configuré, l'envoi est
+          automatique et cette étape manuelle disparaît.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= FORMATION ================= -->
+    <section class="module module-formation">
+      <div class="module-head" id="f-apercu">
+        <span class="num">01</span>
+        <div>
+          <h2>Formation &amp; Écoles partenaires</h2>
+          <p>Gestion des écoles où Headquarters enseigne, planification des séances, suivi pédagogique et maintenance des salles informatiques.</p>
+        </div>
+      </div>
+
+      <p>
+        Ce module regroupe six onglets : <span class="ui tab">Aperçu</span> <span class="ui tab">Écoles partenaires</span>
+        <span class="ui tab">Camps de vacances</span> <span class="ui tab">Formateurs &amp; Planning</span>
+        <span class="ui tab">Rapports de cours</span> <span class="ui tab">Maintenance</span>. L'onglet
+        <span class="ui tab">Aperçu</span> affiche en un coup d'œil les séances à venir, les rapports de cours en attente
+        de lecture, les salles dont la maintenance est en retard et le nombre d'écoles partenaires actives, suivi d'un
+        échéancier des prochaines échéances (séances, maintenances, relances).
+      </p>
+
+      <h3 id="f-ecoles">Écoles partenaires</h3>
+      <p>
+        Chaque école partenaire a une fiche regroupant ses informations (ville, contact, statut
+        <span class="pill green">Actif</span> / <span class="pill orange">Suspendu</span> / <span class="pill slate">Terminé</span>),
+        ses salles équipées, ses classes et ses documents.
+      </p>
+
+      <h4>Salles équipées</h4>
+      <p>
+        Depuis la fiche école, la section <strong>Salles équipées</strong> liste les salles avec leur capacité et leur
+        nombre d'équipements. Chaque salle détaille son matériel (ordinateur, kit robotique, drone, TV interactive,
+        climatiseur, réseau…) avec un état — <span class="pill green">Fonctionnel</span>,
+        <span class="pill red">En panne</span>, <span class="pill orange">En réparation</span> ou
+        <span class="pill slate">Hors service</span> — qui sert de base au suivi de maintenance (voir plus bas).
+      </p>
+
+      <h3 id="f-classes">Classes et canevas de formation</h3>
+      <p>
+        Chaque école partenaire peut avoir plusieurs <strong>classes</strong> (ex. « Terminale S »), propres à cette
+        école. Une classe porte un <strong>canevas de formation</strong> : la liste ordonnée des chapitres à enseigner,
+        définie séparément pour chacun des quatre domaines — Intelligence Artificielle, Informatique, Robotique,
+        Pilotage de drone.
+      </p>
+      <div class="callout tip">
+        <span class="tag">À quoi ça sert</span>
+        <p>
+          Le canevas permet de vérifier qu'un formateur suit bien le programme prévu, dans l'ordre. Chaque chapitre
+          affiche s'il a été couvert (« Couvert le [date] ») ou non. S'il détecte qu'un chapitre plus avancé a été
+          couvert alors qu'un chapitre antérieur ne l'est pas encore, HQ Gestion affiche un badge
+          <span class="pill red">Sauté ?</span> sur le chapitre manquant — un signal à vérifier avec le formateur
+          concerné.
+        </p>
+      </div>
+      <p>
+        La couverture des chapitres se met à jour automatiquement : c'est le formateur qui les coche lorsqu'il soumet
+        son rapport de cours (voir <a href="#f-rapports">Rapports de cours</a>). Vous pouvez joindre des fichiers à
+        chaque chapitre — supports de cours, exercices — en cliquant dessus pour le déplier.
+      </p>
+
+      <h3 id="f-camps">Camps de vacances</h3>
+      <p>
+        En dehors des écoles partenaires, Headquarters organise des camps de vacances : nom, lieu, ville, dates et
+        responsable sur place. Un camp passe de <span class="pill blue">Planifié</span> à
+        <span class="pill orange">En cours</span> via le bouton <span class="ui btn">Démarrer</span>, puis à
+        <span class="pill green">Terminé</span>. Les camps n'ont pas de classes formelles : les séances qui s'y
+        déroulent utilisent un simple champ « Groupe » en texte libre plutôt qu'une classe rattachée à une école.
+      </p>
+
+      <h3 id="f-seances">Planning des séances (Formateurs &amp; Planning)</h3>
+      <p>
+        Cet onglet propose trois vues — <span class="ui tab">Liste</span> <span class="ui tab">Calendrier</span>
+        <span class="ui tab">Charge</span> (charge de travail par formateur) — et le bouton
+        <span class="ui btn">Nouvelle séance</span> pour planifier une intervention.
+      </p>
+      <ol class="steps">
+        <li>Renseignez la date, l'heure de début et de fin.</li>
+        <li>Choisissez le lieu : <em>École partenaire</em> ou <em>Camp de vacances</em>.</li>
+        <li>Si c'est une école : sélectionnez l'école, puis la salle et la classe concernées (la classe détermine le canevas suivi ce jour-là).</li>
+        <li>Choisissez le domaine enseigné et le formateur.</li>
+        <li>Indiquez l'effectif prévu, puis validez.</li>
+      </ol>
+      <div class="callout warn">
+        <span class="tag">Attention</span>
+        <p>
+          HQ Gestion refuse d'enregistrer une séance si le formateur choisi est déjà occupé sur ce créneau, ou si la
+          salle est déjà réservée pour une autre séance — un message d'erreur explicite précise le conflit détecté.
+        </p>
+      </div>
+      <p>
+        Une séance passe de <span class="pill blue">Planifiée</span> à <span class="pill green">Réalisée</span>
+        automatiquement lorsque le formateur soumet son rapport de cours, ou à <span class="pill red">Annulée</span>
+        si elle est annulée manuellement.
+      </p>
+
+      <h3 id="f-rapports">Rapports de cours</h3>
+      <p>
+        Après chaque séance réalisée, le formateur soumet un rapport : contenu dispensé, effectif réellement présent,
+        difficultés rencontrées, et — si la séance est rattachée à une classe — la liste à cocher des chapitres du
+        canevas couverts ce jour-là. Un rapport passe de <span class="pill orange">Soumis</span> à
+        <span class="pill green">Lu</span> lorsque vous cliquez sur <span class="ui btn">Marquer comme lu</span>, avec
+        un commentaire RH optionnel visible ensuite par le formateur.
+      </p>
+
+      <h3 id="f-maintenance">Maintenance préventive</h3>
+      <p>
+        Chaque salle équipée peut avoir une <strong>fréquence de maintenance</strong> (en mois) ; HQ Gestion calcule
+        automatiquement la prochaine échéance à partir de la dernière visite, et la fait remonter dans l'échéancier
+        de l'onglet <span class="ui tab">Aperçu</span> lorsqu'elle approche ou est dépassée.
+      </p>
+      <ol class="steps">
+        <li>Depuis <span class="ui tab">Maintenance</span>, cliquez sur <span class="ui btn">Nouvelle visite</span>.</li>
+        <li>Choisissez l'école, éventuellement une salle précise (sinon la visite couvre toute la salle informatique), et un technicien.</li>
+        <li>Sur la fiche de la visite, ajoutez un <strong>constat</strong> par équipement défaillant : panne constatée, solution appliquée, puis suivez son statut — <span class="pill red">Signalé</span>, <span class="pill orange">En cours</span>, <span class="pill green">Résolu</span>.</li>
+        <li>Une fois l'intervention terminée, cliquez sur <span class="ui btn">Marquer réalisée</span>.</li>
+      </ol>
+      <p>Des photos de l'état de la salle ou des équipements peuvent être jointes directement sur la fiche de la visite.</p>
+
+      <h3 id="f-formateur">Espace du formateur</h3>
+      <p>
+        Un compte du rôle <span class="role-tag">Formateur</span> ne voit pas la gestion des écoles ni les autres
+        formateurs : à la connexion, le module affiche directement « <strong>Mon espace formateur</strong> » avec deux
+        onglets restreints — <span class="ui tab">Mon planning</span> (ses séances) et
+        <span class="ui tab">Mes rapports</span> (ses rapports de cours, avec la case à cocher du canevas). C'est
+        l'outil de saisie quotidien du formateur sur le terrain.
+      </p>
+    </section>
+
+    <!-- ================= RH ================= -->
+    <section class="module module-rh">
+      <div class="module-head" id="rh-apercu">
+        <span class="num">02</span>
+        <div>
+          <h2>Ressources Humaines</h2>
+          <p>Dossier du personnel, contrats, présences, recrutement, entrées/sorties, congés, paie, évaluations — et un espace self-service pour que chaque employé gère ses propres démarches.</p>
+        </div>
+      </div>
+
+      <p>
+        Onglets disponibles pour la Direction et le secrétariat :
+        <span class="ui tab">Aperçu</span> <span class="ui tab">Dossier du personnel</span>
+        <span class="ui tab">Congés &amp; absences</span> <span class="ui tab">Paie &amp; Rémunérations</span>
+        <span class="ui tab">Évaluations</span> <span class="ui tab">Formation</span>
+        <span class="ui tab">Rapports d'activité</span> <span class="ui tab">Recrutement</span>
+        <span class="ui tab">Présences</span>. L'<span class="ui tab">Aperçu</span> résume six indicateurs — employés
+        actifs, congés en attente, évaluations en brouillon, paies à traiter, contrats à renouveler et candidats en
+        cours de traitement — suivis d'un panneau <strong>« À traiter »</strong> qui regroupe en un seul endroit les
+        contrats proches de leur échéance, les entretiens de recrutement à venir, les checklists d'intégration/départ
+        incomplètes et les congés en attente de décision, chaque ligne renvoyant directement à la fiche concernée.
+      </p>
+
+      <h3 id="rh-dossier">Dossier du personnel</h3>
+      <p>
+        Une fiche employé regroupe matricule, poste, département, type de contrat (CDI, CDD, Stage, Consultant),
+        salaire de base et statut. Deux champs structurent désormais le suivi individuel :
+      </p>
+      <div class="card-grid">
+        <div class="mini-card">
+          <h5>Responsable hiérarchique</h5>
+          <p>Assigné à la création ou modification de la fiche. C'est cette personne qui reçoit les notifications de suivi des congés et rapports d'activité de l'employé (voir plus bas).</p>
+        </div>
+        <div class="mini-card">
+          <h5>Photo &amp; documents</h5>
+          <p>Chaque employé peut avoir une photo de profil et des documents joints (contrat, diplômes, attestations…), visibles sur sa fiche.</p>
+        </div>
+      </div>
+      <p>
+        Cliquez sur une ligne dans <span class="ui tab">Dossier du personnel</span> pour ouvrir la fiche complète de
+        l'employé : photo, historique des contrats et documents généraux s'y gèrent depuis un seul endroit.
+      </p>
+
+      <h3 id="rh-contrats">Contrats de travail</h3>
+      <p>
+        Chaque employé possède un historique de contrats (CDI, CDD, Stage, Consultant), créé automatiquement à
+        l'embauche puis complété au fil du temps. Un contrat suit un statut simple :
+      </p>
+      <div class="flow">
+        <span class="pill green">Actif</span><span class="arrow">→</span>
+        <span class="pill blue">Renouvelé</span> <span style="color:var(--ink-faint)">ou</span>
+        <span class="pill slate">Résilié</span> <span style="color:var(--ink-faint)">ou</span>
+        <span class="pill red">Expiré</span>
+      </div>
+      <ol class="steps">
+        <li>Depuis la fiche employé, dépliez la section <strong>Contrats</strong> pour voir l'historique complet.</li>
+        <li>Le bouton <span class="ui btn">Renouveler</span> clôt le contrat actif (statut <span class="pill blue">Renouvelé</span>) et en crée un nouveau <span class="pill green">Actif</span> à sa suite, avec les nouvelles conditions (type, dates, salaire).</li>
+        <li>Chaque contrat peut recevoir ses propres documents joints (le contrat signé, un avenant…).</li>
+      </ol>
+      <div class="callout tip">
+        <span class="tag">Échéance</span>
+        <p>
+          Un contrat dont la date de fin approche (30 jours ou moins) est signalé par un badge
+          <span class="pill orange">Échéance proche</span> sur la fiche employé, et remonte dans le panneau
+          « À traiter » de l'<span class="ui tab">Aperçu</span> RH. Une notification est également envoyée
+          automatiquement à la Direction 7 jours avant l'échéance (voir <a href="#notifications">Notifications</a>).
+        </p>
+      </div>
+
+      <h3 id="rh-conges">Congés &amp; absences</h3>
+      <p>Une demande de congé suit un circuit de validation en trois étapes :</p>
+      <div class="flow">
+        <span class="pill slate">Brouillon</span><span class="arrow">→</span>
+        <span class="pill orange">Soumise</span><span class="arrow">→</span>
+        <span class="pill green">Validée</span> <span style="color:var(--ink-faint)">ou</span> <span class="pill red">Rejetée</span>
+      </div>
+      <p>
+        Types disponibles : annuel, maladie, maternité, paternité, sans solde, autre. Une fois soumise, seule la
+        Direction (ou un compte Admin) peut valider ou rejeter la demande, avec un commentaire optionnel.
+      </p>
+
+      <h3 id="rh-presences">Présences &amp; pointage</h3>
+      <p>
+        En attendant l'achat d'une pointeuse biométrique, HQ Gestion propose un <strong>pointage logiciel</strong> :
+        chaque employé badge son arrivée et son départ directement depuis l'application, avec une contrainte forte —
+        <strong>le pointage n'est accepté que depuis le réseau du bureau</strong>, identifié par son adresse IP
+        publique. Impossible de badger depuis chez soi ou en déplacement.
+      </p>
+      <div class="card-grid">
+        <div class="mini-card">
+          <h5>Pour chaque employé</h5>
+          <p>Un encart « Présence du jour » apparaît en haut du tableau de bord : <span class="ui btn">Pointer mon arrivée</span> puis, une fois arrivé, <span class="ui btn">Pointer mon départ</span>. L'heure exacte s'affiche pour chaque badgeage.</p>
+        </div>
+        <div class="mini-card">
+          <h5>Retard</h5>
+          <p>Si l'heure de badgeage dépasse l'heure d'arrivée attendue (plus une tolérance en minutes), le pointage est marqué <span class="pill orange">Retard</span> et une notification part vers le responsable hiérarchique de l'employé, ou vers la Direction si aucun responsable n'est renseigné.</p>
+        </div>
+      </div>
+      <p>
+        L'onglet <span class="ui tab">Présences</span> (Direction / secrétariat) affiche le tableau du jour
+        (employé, arrivée, départ, statut, source) filtrable par date, avec deux réglages dans une section
+        <strong>Paramètres</strong> repliable :
+      </p>
+      <ol class="steps">
+        <li><strong>Heure d'arrivée attendue</strong> et <strong>tolérance</strong> (en minutes) — déterminent quand un pointage est considéré en retard.</li>
+        <li><strong>Réseau autorisé</strong> — la ou les adresses IP (ou plages, notation CIDR) du bureau à partir desquelles le pointage est accepté. Tant qu'aucune IP n'y figure, aucun pointage n'est possible.</li>
+      </ol>
+      <p>
+        Le bouton <span class="ui btn">Pointage manuel</span> permet à un membre du personnel de corriger un oubli de
+        badgeage pour un employé (arrivée et/ou départ saisis à la main, sans contrôle de réseau) — utile en cas
+        d'oubli ou de panne.
+      </p>
+
+      <h3 id="rh-paie">Paie &amp; évaluations</h3>
+      <p>
+        <strong>Paie &amp; Rémunérations</strong> enregistre une ligne de paie par employé et par période (format
+        AAAA-MM), avec salaire de base, primes et déductions, statut <span class="pill slate">Brouillon</span> puis
+        <span class="pill green">Payée</span>. <strong>Évaluations</strong> permet de noter un employé sur 20 avec
+        points forts et axes d'amélioration, statut <span class="pill slate">Brouillon</span> puis
+        <span class="pill green">Finalisée</span>.
+      </p>
+
+      <h3 id="rh-formations">Formation professionnelle du personnel</h3>
+      <p>
+        À ne pas confondre avec le module « Formation &amp; Écoles partenaires » : cet onglet suit les formations
+        <em>suivies par vos employés</em> (séminaires, certifications externes…) — titre, organisme, lieu, dates,
+        coût — avec la liste des participants et leur statut (inscrit, présent, absent, certifié).
+      </p>
+
+      <h3 id="rh-recrutement">Recrutement</h3>
+      <p>
+        Le recrutement se pilote en deux niveaux : les <strong>postes</strong> ouverts, et les
+        <strong>candidats</strong> qui postulent dessus.
+      </p>
+      <ol class="steps">
+        <li>Créez un <strong>poste</strong> (titre, département, type de contrat, nombre de postes à pourvoir).</li>
+        <li>Depuis la fiche du poste, ajoutez les <strong>candidats</strong> reçus (nom, contact, source, notes).</li>
+        <li>Chaque candidat progresse dans un entonnoir de statuts, mis à jour manuellement au fil du processus.</li>
+      </ol>
+      <div class="flow">
+        <span class="pill slate">Reçu</span><span class="arrow">→</span>
+        <span class="pill blue">Présélection</span><span class="arrow">→</span>
+        <span class="pill orange">Entretien</span><span class="arrow">→</span>
+        <span class="pill" style="background:#F3E8FB;color:#7C3FA6">Offre</span><span class="arrow">→</span>
+        <span class="pill green">Embauché</span>
+      </div>
+      <p>(avec l'issue <span class="pill red">Refusé</span> possible à tout moment).</p>
+      <p>
+        Depuis la fiche d'un candidat, planifiez un ou plusieurs <strong>entretiens</strong> : date, heure,
+        évaluateur, mode (présentiel ou visio). Une fois réalisé, l'entretien reçoit une note sur 20 et un
+        commentaire. HQ Gestion envoie un rappel automatique à l'évaluateur la veille de l'entretien.
+      </p>
+      <div class="callout tip">
+        <span class="tag">Embauche</span>
+        <p>
+          Lorsqu'un candidat atteint le statut <span class="pill green">Embauché</span>, utilisez le bouton
+          <span class="ui btn accent2">Embaucher</span> plutôt que le changement de statut classique : il crée
+          automatiquement la fiche employé correspondante (avec son premier contrat et sa checklist d'intégration),
+          en reprenant les informations déjà saisies sur le candidat.
+        </p>
+      </div>
+
+      <h3 id="rh-entrees-sorties">Entrées &amp; sorties</h3>
+      <p>
+        Chaque employé porte une <strong>checklist</strong> d'intégration à son arrivée, et une checklist de départ
+        lorsqu'il quitte l'entreprise — une liste de tâches à cocher (matériel remis, comptes créés, badge, etc. à
+        l'arrivée ; restitution du matériel, solde de tout compte, etc. au départ), consultable et modifiable depuis
+        sa fiche employé.
+      </p>
+      <ol class="steps">
+        <li>La checklist d'<strong>intégration</strong> est créée automatiquement à la création de la fiche employé.</li>
+        <li>Pour un départ, changez le statut de l'employé sur <span class="pill slate">Terminé</span> depuis sa fiche : son contrat actif est résilié automatiquement et la checklist de <strong>départ</strong> est générée.</li>
+        <li>Cochez chaque élément au fur et à mesure ; un compteur de progression indique où en est le processus.</li>
+      </ol>
+      <p>
+        Une checklist d'intégration encore incomplète deux jours après l'arrivée remonte automatiquement dans le
+        panneau « À traiter » de l'<span class="ui tab">Aperçu</span> et déclenche une notification au secrétariat.
+      </p>
+
+      <h3 id="rh-comptes">Créer un compte self-service pour un employé</h3>
+      <p>
+        Chaque membre du personnel peut disposer de son propre compte pour gérer ses congés, son courrier et ses
+        rapports d'activité sans passer par le secrétariat. Cela se fait depuis <strong>Administration → Utilisateurs</strong>
+        (réservé au rôle Admin) :
+      </p>
+      <ol class="steps">
+        <li>Cliquez sur <span class="ui btn">Nouvel utilisateur</span>.</li>
+        <li>Renseignez le nom complet, l'e-mail et un mot de passe temporaire.</li>
+        <li>Choisissez le rôle : <span class="role-tag">Formateur</span> s'il enseigne déjà dans le module Formation, sinon <span class="role-tag">Employé</span> pour le reste du personnel (comptabilité, logistique, accueil…).</li>
+        <li>Le champ <span class="ui field">Fiche employé RH liée</span> apparaît alors : sélectionnez la fiche du personnel existante à relier à ce compte.</li>
+        <li>Validez avec <span class="ui btn">Créer le compte</span>.</li>
+      </ol>
+      <div class="callout tip">
+        <span class="tag">Bon à savoir</span>
+        <p>
+          Une fiche employé ne peut être liée qu'à un seul compte à la fois — la liste ne propose que les employés
+          actifs qui n'ont pas encore de compte. Le rôle <span class="role-tag">Formateur</span> conserve en plus son
+          accès à l'espace formation ; le rôle <span class="role-tag">Employé</span> n'a accès qu'à son espace
+          personnel décrit ci-dessous.
+        </p>
+      </div>
+
+      <h3 id="rh-espace">L'espace « Mon dossier »</h3>
+      <p>
+        Une fois connecté, un compte <span class="role-tag">Formateur</span> ou <span class="role-tag">Employé</span>
+        voit dans le module Ressources Humaines un espace personnel restreint avec quatre onglets :
+      </p>
+      <div class="card-grid">
+        <div class="mini-card">
+          <h5>Mon dossier</h5>
+          <p>Photo de profil, informations personnelles et documents — l'employé peut ajouter ses propres documents, mais ne peut pas en supprimer (seul le RH le peut).</p>
+        </div>
+        <div class="mini-card">
+          <h5>Mes congés</h5>
+          <p>Soumission d'une demande sans passer par un tiers ; elle est automatiquement rattachée à sa propre fiche.</p>
+        </div>
+        <div class="mini-card">
+          <h5>Mes courriers</h5>
+          <p>Une demande de courrier sortant (ex. attestation de travail) transmise directement au secrétariat, qui la traite comme un courrier classique.</p>
+        </div>
+        <div class="mini-card">
+          <h5>Mes rapports d'activité</h5>
+          <p>Un rapport périodique (période, contenu, difficultés) soumis à validation.</p>
+        </div>
+      </div>
+      <p>
+        Le point clé du suivi des <strong>rapports d'activité</strong> : dès qu'un employé soumet le sien, c'est son
+        <strong>responsable hiérarchique</strong> (défini sur sa fiche RH) qui reçoit une notification individuelle —
+        pas l'ensemble de la Direction. Ce responsable peut consulter le rapport et y laisser un commentaire (« Marquer
+        comme lu ») même s'il n'a pas lui-même le pouvoir de validation ; la validation ou le rejet final restent
+        réservés à la Direction, exactement comme pour les congés.
+      </p>
+    </section>
+
+    <!-- ================= PROSPECTION ================= -->
+    <section class="module module-prospection">
+      <div class="module-head" id="p-apercu">
+        <span class="num">03</span>
+        <div>
+          <h2>Prospection &amp; Écoles cibles</h2>
+          <p>Démarchage de nouvelles écoles, suivi des visites terrain jusqu'à la signature de la convention de partenariat.</p>
+        </div>
+      </div>
+
+      <p>
+        Trois onglets : <span class="ui tab">Campagnes</span> <span class="ui tab">Écoles ciblées</span>
+        <span class="ui tab">Rapports de visite</span>, avec un <span class="ui tab">Aperçu</span> qui affiche les
+        campagnes actives, les relances en retard, les écoles converties et l'entonnoir de conversion du mois.
+      </p>
+
+      <h3 id="p-campagnes">Campagnes et équipes terrain</h3>
+      <p>
+        Une <strong>campagne</strong> de prospection (ex. « Vacances 2026 ») regroupe une période et un ou plusieurs
+        <strong>groupes de prospection</strong> — les équipes qui vont sur le terrain. Depuis la fiche d'une campagne,
+        <span class="ui btn">Nouveau groupe</span> crée une équipe, puis <span class="ui btn accent2">Gérer les membres</span>
+        permet de cocher les employés actifs qui la composent. Une campagne active se
+        <span class="ui btn">Clôture</span> une fois la période terminée.
+      </p>
+
+      <h3 id="p-ecoles">Écoles ciblées</h3>
+      <p>Chaque école ciblée progresse dans un entonnoir de statuts :</p>
+      <div class="flow">
+        <span class="pill slate">À contacter</span><span class="arrow">→</span>
+        <span class="pill blue">Contacté</span><span class="arrow">→</span>
+        <span class="pill orange">Intéressé</span><span class="arrow">→</span>
+        <span class="pill" style="background:#F3E8FB;color:#7C3FA6">En négociation</span><span class="arrow">→</span>
+        <span class="pill green">Partenaire</span>
+      </div>
+      <p>
+        (avec les issues <span class="pill red">Refusé</span> et <span class="pill slate">Abandonné</span> à tout
+        moment). Vous pouvez ajouter une école une par une, ou <span class="ui btn accent2">Importer</span> une liste
+        Excel entière (colonnes Nom, Ville, Contact, Téléphone, E-mail) rattachée à une campagne et, en option, à un
+        groupe.
+      </p>
+      <div class="callout tip">
+        <span class="tag">Relances</span>
+        <p>
+          Chaque école ciblée peut porter une <strong>date de relance</strong> : si cette date est dépassée sans
+          nouvelle action enregistrée, elle s'affiche en rouge dans la liste et remonte dans l'échéancier de l'aperçu
+          du module — un moyen simple de ne pas laisser une école intéressée sans suivi.
+        </p>
+      </div>
+      <p>
+        Lorsqu'une école atteint le statut <span class="pill green">Partenaire</span>, le bouton
+        <span class="ui btn accent2">Convertir en école partenaire</span> apparaît sur sa fiche : il crée
+        automatiquement la fiche correspondante dans le module <strong>Formation &amp; Écoles partenaires</strong>,
+        prête à recevoir salles, classes et séances.
+      </p>
+
+      <h3 id="p-rapports">Rapports de visite</h3>
+      <p>
+        Chaque contact ou visite sur le terrain donne lieu à un rapport : résumé, résultat, prochaine action et date
+        de relance, enregistré depuis la fiche de l'école ciblée via <span class="ui btn">Nouveau rapport</span>.
+      </p>
+      <div class="callout tip">
+        <span class="tag">Photos &amp; vidéos</span>
+        <p>
+          En dépliant un rapport, vous pouvez y joindre des <strong>photos et vidéos</strong> — la salle pressentie
+          pour l'équipement si la convention est signée, ou une photo prise avec le responsable de l'école rencontré.
+          Les images s'affichent directement en aperçu dans le rapport, sans avoir à les télécharger, pour que la
+          Direction puisse les consulter d'un coup d'œil.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= NOTIFICATIONS ================= -->
+    <section id="notifications">
+      <h2 style="font-size:1.5rem; margin-bottom:6px;">Notifications</h2>
+      <p class="lede-block">
+        La clochette <span class="ui tab">Notifications</span> en haut de la barre latérale centralise tout ce qui
+        mérite votre attention, avec trois niveaux de livraison.
+      </p>
+      <div class="card-grid">
+        <div class="mini-card">
+          <h5>1. Dans l'application</h5>
+          <p>Le badge sur la clochette se met à jour instantanément dès qu'un événement survient, tant que l'application est ouverte dans un onglet — plus besoin d'actualiser la page.</p>
+        </div>
+        <div class="mini-card">
+          <h5>2. Notification du navigateur</h5>
+          <p>Une fois activée, un encart s'affiche brièvement au-dessus des autres fenêtres, même si vous êtes sur un autre écran ou une autre application — cliquez dessus pour ouvrir directement l'élément concerné.</p>
+        </div>
+        <div class="mini-card">
+          <h5>3. E-mail (alertes critiques)</h5>
+          <p>Les alertes les plus importantes (échéance de contrat, congé bloqué depuis 2 jours, rupture de stock) partent aussi par e-mail, en secours si le navigateur n'a pas pu délivrer la notification.</p>
+        </div>
+      </div>
+
+      <h3>Activer les notifications du navigateur</h3>
+      <p>
+        Ouvrez la clochette : si elles ne sont pas encore activées, un bandeau <strong>« Recevez les notifications
+        même hors de l'application »</strong> propose un bouton <span class="ui btn accent2">Activer</span>. Le
+        navigateur demande alors une autorisation une seule fois ; une fois accordée, le bandeau disparaît et les
+        notifications sont actives sur cet appareil.
+      </p>
+      <div class="callout warn">
+        <span class="tag">Limite physique</span>
+        <p>
+          Un ordinateur en veille prolongée (éteint ou en hibernation, écran verrouillé mis à part) ne peut recevoir
+          aucune notification tant qu'il ne s'est pas reconnecté au réseau — aucune application ne peut « réveiller »
+          un poste éteint. Le message reste en attente et s'affiche dès la reconnexion. Un simple écran verrouillé,
+          en revanche, ne bloque rien.
+        </p>
+      </div>
+
+      <h3>Ce qui déclenche une notification</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Événement</th><th>Destinataire</th><th>Critique (+ e-mail)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Congé soumis</td><td>Direction</td><td>Non</td></tr>
+            <tr><td>Congé en attente depuis 2 jours</td><td>Direction</td><td>Oui</td></tr>
+            <tr><td>Demande d'achat soumise</td><td>Direction</td><td>Non</td></tr>
+            <tr><td>Rapport d'activité soumis</td><td>Responsable hiérarchique, sinon Direction</td><td>Non</td></tr>
+            <tr><td>Rapport de cours soumis</td><td>Direction</td><td>Non</td></tr>
+            <tr><td>Stock sous le seuil d'alerte</td><td>Secrétariat</td><td>Oui</td></tr>
+            <tr><td>Courrier entrant (self-service)</td><td>Secrétariat</td><td>Non</td></tr>
+            <tr><td>Candidature mise à jour</td><td>Direction</td><td>Non</td></tr>
+            <tr><td>Entretien de recrutement demain</td><td>Évaluateur, sinon Direction</td><td>Non</td></tr>
+            <tr><td>Contrat à échéance dans 7 jours</td><td>Direction</td><td>Oui</td></tr>
+            <tr><td>Retard de pointage</td><td>Responsable hiérarchique, sinon Direction</td><td>Non</td></tr>
+            <tr><td>Checklist d'intégration incomplète (2 jours)</td><td>Secrétariat</td><td>Non</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Les alertes d'échéance (contrat, entretien, congé en attente, checklist) sont vérifiées automatiquement
+        chaque matin — inutile de les chercher manuellement, elles remontent d'elles-mêmes le moment venu.
+      </p>
+    </section>
+
+    <!-- ================= ROLES ================= -->
+    <section id="roles">
+      <h2 style="font-size:1.5rem; margin-bottom:6px;">Rôles &amp; accès</h2>
+      <p class="lede-block">
+        Les rôles ne sont plus figés : depuis <strong>Administration → Rôles</strong> (réservé au rôle Admin), vous
+        pouvez créer des rôles sur mesure en plus des cinq rôles fournis par défaut.
+      </p>
+
+      <h3>Créer et gérer un rôle</h3>
+      <ol class="steps">
+        <li>Cliquez sur <span class="ui btn">Nouveau rôle</span> : donnez-lui un code technique (minuscules, jamais modifiable ensuite), un nom et une description.</li>
+        <li>Cochez <strong>« Rôle du personnel »</strong> si ce rôle doit accéder aux zones sensibles des RH — recrutement, contrats, candidatures — indépendamment des droits détaillés ci-dessous.</li>
+        <li>Optionnel : <strong>« Copier les droits depuis »</strong> un rôle existant pour partir d'une base déjà configurée plutôt que de zéro.</li>
+        <li>Sur la fiche du rôle, cochez pour chaque module les actions autorisées : <strong>Lire</strong>, <strong>Créer</strong>, <strong>Modifier</strong>, <strong>Supprimer</strong>, <strong>Valider</strong>.</li>
+      </ol>
+      <p>
+        Chaque carte de rôle affiche le nombre d'utilisateurs qui le portent. Un rôle ne peut être supprimé que s'il
+        n'est plus attribué à personne — réaffectez d'abord les utilisateurs concernés depuis
+        <strong>Administration → Utilisateurs</strong>, où le rôle de chacun se change directement dans la liste. Le
+        rôle <span class="role-tag">Admin</span> reste protégé : ses droits ne peuvent pas être modifiés.
+      </p>
+
+      <h3>Rôles fournis par défaut</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Rôle</th><th>Portée</th><th>Peut valider (congés, rapports…)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="role-tag">Admin</span></td><td>Accès complet à tous les modules, gestion des comptes et des rôles.</td><td>Oui</td></tr>
+            <tr><td><span class="role-tag">Direction</span></td><td>Lecture de tous les modules métier, décisions et validations.</td><td>Oui</td></tr>
+            <tr><td><span class="role-tag">Secrétaire</span></td><td>Saisie et gestion opérationnelle de tous les modules métier.</td><td>Non</td></tr>
+            <tr><td><span class="role-tag">Formateur</span></td><td>Son propre planning et ses rapports de cours ; en plus, son espace RH personnel (« Mon dossier »).</td><td>Non</td></tr>
+            <tr><td><span class="role-tag">Employé</span></td><td>Son espace RH personnel uniquement (« Mon dossier ») — aucun accès aux autres modules.</td><td>Non</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      Guide destiné à un usage interne Headquarters. Les libellés d'écran cités reflètent l'application au moment de
+      la rédaction ; en cas d'écart avec ce que vous observez, fiez-vous à l'application.
+    </footer>
+  </main>
+</div>
