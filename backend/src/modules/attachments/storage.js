@@ -26,3 +26,19 @@ export const uploadPhoto = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => cb(null, file.mimetype.startsWith('image/')),
 });
+
+const PUBLIC_UPLOAD_MIME_TYPES = new Set([
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/png',
+  'image/jpeg',
+]);
+
+/** Upload public non authentifié (candidature en ligne) — plafond et types de
+ * fichiers volontairement plus stricts que `upload` (usage interne). */
+export const uploadPublic = multer({
+  storage: diskStorage,
+  limits: { fileSize: 10 * 1024 * 1024, files: 5 },
+  fileFilter: (_req, file, cb) => cb(null, PUBLIC_UPLOAD_MIME_TYPES.has(file.mimetype)),
+});

@@ -72,9 +72,9 @@ router.patch(
       `UPDATE rh_postes SET
          titre = COALESCE($2, titre), departement = COALESCE($3, departement),
          type_contrat = COALESCE($4, type_contrat), description = COALESCE($5, description),
-         nombre_postes = COALESCE($6, nombre_postes), updated_at = now()
+         nombre_postes = COALESCE($6, nombre_postes), avis_publie = COALESCE($7, avis_publie), updated_at = now()
        WHERE id = $1 RETURNING *`,
-      [req.params.id, p.titre, p.departement, p.type_contrat, p.description, p.nombre_postes]
+      [req.params.id, p.titre, p.departement, p.type_contrat, p.description, p.nombre_postes, p.avis_publie]
     );
     if (!rows[0]) throw notFound('Poste introuvable');
     await logAudit({ userId: req.user.id, action: 'update', moduleCode: 'rh', entityType: 'poste', entityId: rows[0].id, ip: req.ip });

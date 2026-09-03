@@ -1,7 +1,7 @@
 import DetailSkeleton from '../../components/DetailSkeleton.jsx';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Briefcase, Plus } from 'lucide-react';
+import { ArrowLeft, Briefcase, Mail, Plus, Video } from 'lucide-react';
 import { get, patch, post } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
@@ -12,7 +12,7 @@ import { CANDIDAT_STATUT, ENTRETIEN_STATUT } from './statusMaps.js';
 
 const FUNNEL = ['recu', 'preselection', 'entretien', 'offre', 'embauche'];
 
-const EMPTY_ENTRETIEN = { date_entretien: '', heure_debut: '', evaluateur_id: '', mode: 'presentiel' };
+const EMPTY_ENTRETIEN = { date_entretien: '', heure_debut: '', evaluateur_id: '', mode: 'presentiel', generer_meet: false };
 const EMPTY_EMBAUCHE = { matricule: '', date_embauche: '', salaire_base: '0' };
 
 export default function CandidatDetail() {
@@ -23,6 +23,7 @@ export default function CandidatDetail() {
   const [candidat, setCandidat] = useState(null);
   const [error, setError] = useState('');
   const [employes, setEmployes] = useState([]);
+  const [googleStatus, setGoogleStatus] = useState({ connected: false });
 
   const [entretienOpen, setEntretienOpen] = useState(false);
   const [entretienForm, setEntretienForm] = useState(EMPTY_ENTRETIEN);
@@ -43,6 +44,7 @@ export default function CandidatDetail() {
 
   useEffect(() => { load(); }, [load]);
   useEffect(() => { get('/rh/employes?statut=actif').then(setEmployes).catch(() => {}); }, []);
+  useEffect(() => { get('/rh/google/status').then(setGoogleStatus).catch(() => {}); }, []);
 
   const changerStatut = async (statut) => {
     try {
@@ -82,6 +84,15 @@ export default function CandidatDetail() {
       setRealiseFor(null);
       toast.success('Mis à jour');
       load();
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
+  const renvoyerInvitation = async (entretienId) => {
+    try {
+      await post(`/rh/candidats/entretiens/${entretienId}/envoyer-invitation`, {});
+      toast.success('Invitation renvoyée');
     } catch (e) {
       toast.error(e.message);
     }
@@ -184,13 +195,25 @@ export default function CandidatDetail() {
               <p className="text-xs text-slate-400">
                 Évaluateur : {en.evaluateur_nom ? `${en.evaluateur_nom} ${en.evaluateur_prenom}` : 'Non assigné'}
               </p>
+              {en.meet_link && (
+                <a href={en.meet_link} target="_blank" rel="noreferrer" className="mt-1 flex items-center gap-1 text-xs text-hq-cyan hover:text-hq-cyan-dark">
+                  <Video size={13} /> Rejoindre sur Google Meet
+                </a>
+              )}
               {en.score != null && <p className="mt-1 text-xs text-slate-500">Score : {en.score}/20</p>}
               {en.commentaire && <p className="mt-1 text-slate-600">{en.commentaire}</p>}
-              {en.statut === 'planifie' && canUpdate && realiseFor !== en.id && (
-                <button className="mt-2 text-xs text-hq-cyan hover:text-hq-cyan-dark" onClick={() => ouvrirRealise(en)}>
-                  Marquer comme réalisé
-                </button>
-              )}
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                {en.statut === 'planifie' && canUpdate && realiseFor !== en.id && (
+                  <button className="text-xs text-hq-cyan hover:text-hq-cyan-dark" onClick={() => ouvrirRealise(en)}>
+                    Marquer comme réalisé
+                  </button>
+                )}
+                {candidat.email && canUpdate && (
+                  <button className="flex items-center gap-1 text-xs text-slate-400 hover:text-hq-blue" onClick={() => renvoyerInvitation(en.id)}>
+                    <Mail size={12} /> Renvoyer l'invitation
+                  </button>
+                )}
+              </div>
               {realiseFor === en.id && (
                 <div className="mt-3 space-y-2 rounded-lg bg-slate-50 p-3">
                   <div className="grid grid-cols-2 gap-2">
@@ -245,6 +268,15 @@ export default function CandidatDetail() {
               <option value="visio">Visio</option>
             </select>
           </div>
+          {googleStatus.connected && (
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input type="checkbox" checked={entretienForm.generer_meet} onChange={(e) => setEntretienForm({ ...entretienForm, generer_meet: e.target.checked })} />
+              Générer un lien Google Meet
+            </label>
+          )}
+          {candidat.email && (
+            <p className="text-xs text-slate-400">Une invitation par e-mail sera envoyée à {candidat.email}.</p>
+          )}
           <button className="btn-primary w-full" onClick={submitEntretien} disabled={!entretienForm.date_entretien}>
             Planifier
           </button>

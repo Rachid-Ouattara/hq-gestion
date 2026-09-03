@@ -6,6 +6,7 @@ import Layout from './components/Layout.jsx';
 import Login from './pages/Login.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
+import PostulerPoste from './pages/public/PostulerPoste.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import ModulePage from './pages/ModulePage.jsx';
 import Users from './pages/Users.jsx';
@@ -97,6 +98,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
           <Route path="/reinitialiser-mot-de-passe" element={<ResetPassword />} />
+          <Route path="/postuler/:posteId" element={<PostulerPoste />} />
           <Route
             path="/"
             element={

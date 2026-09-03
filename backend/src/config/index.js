@@ -40,4 +40,9 @@ export const config = {
     privateKey: process.env.VAPID_PRIVATE_KEY || null,
     subject: process.env.VAPID_SUBJECT || 'mailto:contact@headquaters.org',
   },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID || null,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET || null,
+    redirectUri: process.env.GOOGLE_REDIRECT_URI || null,
+  },
 };

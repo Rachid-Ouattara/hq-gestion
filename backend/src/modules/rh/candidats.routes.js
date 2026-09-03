@@ -1,11 +1,28 @@
 import { Router } from 'express';
+import crypto from 'node:crypto';
 import { asyncHandler, badRequest, notFound } from '../../lib/http.js';
 import { requirePermission, requireStaff } from '../../middleware/rbac.js';
 import { logAudit } from '../../middleware/audit.js';
 import { query, withTransaction } from '../../db/pool.js';
 import { notifyRole } from '../../lib/notifications.js';
-import { candidatSchema, entretienSchema, embaucherSchema } from './rh.schemas.js';
+import { createMeetEvent } from '../../lib/googleCalendar.js';
+import { sendEntretienInvitationEmail } from '../../lib/mailer.js';
+import { candidatSchema, entretienSchema, entretienGroupeSchema, embaucherSchema } from './rh.schemas.js';
 import { ARRIVEE_ITEMS } from './checklists.constants.js';
+
+/** Récupère la connexion Google Calendar active (ligne singleton) — lève une
+ * erreur explicite si `generer_meet` est demandé sans connexion active. */
+async function requireGoogleConnection() {
+  const { rows } = await query('SELECT refresh_token FROM google_calendar_connexion WHERE id = 1');
+  if (!rows[0]) throw badRequest('Aucun compte Google Calendar connecté — voir Recrutement → Connexion Google Calendar.');
+  return rows[0].refresh_token;
+}
+
+function meetTimeRange(dateEntretien, heureDebut, heureFin) {
+  const start = `${dateEntretien}T${heureDebut || '09:00'}:00`;
+  const end = `${dateEntretien}T${heureFin || heureDebut || '10:00'}:00`;
+  return { startDateTime: start, endDateTime: end };
+}
 
 const router = Router();
 router.use(requireStaff);
@@ -211,16 +228,159 @@ router.post(
     const parsed = entretienSchema.safeParse(req.body);
     if (!parsed.success) throw badRequest('Champs invalides (date requise)');
     const en = parsed.data;
-    const { rows: candRows } = await query('SELECT id FROM rh_candidats WHERE id = $1', [req.params.candidatId]);
+    const { rows: candRows } = await query(
+      `SELECT c.id, c.nom, c.prenom, c.email, p.titre AS poste_titre
+         FROM rh_candidats c JOIN rh_postes p ON p.id = c.poste_id WHERE c.id = $1`,
+      [req.params.candidatId]
+    );
     if (!candRows[0]) throw notFound('Candidat introuvable');
+    const candidat = candRows[0];
+
+    let meetLink = null;
+    let googleEventId = null;
+    if (en.generer_meet) {
+      const refreshToken = await requireGoogleConnection();
+      const { startDateTime, endDateTime } = meetTimeRange(en.date_entretien, en.heure_debut, en.heure_fin);
+      const meet = await createMeetEvent({
+        refreshToken,
+        summary: `Entretien — ${candidat.poste_titre} — ${candidat.prenom} ${candidat.nom}`,
+        description: `Entretien individuel avec ${candidat.prenom} ${candidat.nom}.`,
+        startDateTime,
+        endDateTime,
+        attendeeEmails: candidat.email ? [candidat.email] : [],
+      });
+      meetLink = meet.meetLink;
+      googleEventId = meet.eventId;
+    }
+
     const { rows } = await query(
-      `INSERT INTO rh_entretiens (candidat_id, evaluateur_id, date_entretien, heure_debut, heure_fin, mode, score, commentaire)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+      `INSERT INTO rh_entretiens (candidat_id, evaluateur_id, date_entretien, heure_debut, heure_fin, mode, score, commentaire, google_event_id, meet_link)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
        RETURNING *`,
-      [req.params.candidatId, en.evaluateur_id || null, en.date_entretien, en.heure_debut || null, en.heure_fin || null, en.mode || 'presentiel', en.score ?? null, en.commentaire || null]
+      [req.params.candidatId, en.evaluateur_id || null, en.date_entretien, en.heure_debut || null, en.heure_fin || null, en.mode || 'presentiel', en.score ?? null, en.commentaire || null, googleEventId, meetLink]
     );
     await logAudit({ userId: req.user.id, action: 'create', moduleCode: 'rh', entityType: 'entretien', entityId: rows[0].id, ip: req.ip });
+
+    if (candidat.email) {
+      await sendEntretienInvitationEmail({
+        to: candidat.email,
+        fullName: `${candidat.prenom} ${candidat.nom}`,
+        posteTitle: candidat.poste_titre,
+        date: rows[0].date_entretien,
+        heureDebut: rows[0].heure_debut,
+        meetLink: rows[0].meet_link,
+        mode: rows[0].mode,
+      }).catch((err) => {
+        // eslint-disable-next-line no-console
+        console.error('[mailer] échec envoi invitation entretien', err.message);
+      });
+      await query('UPDATE rh_entretiens SET invitation_envoyee_le = now() WHERE id = $1', [rows[0].id]);
+    }
+
     res.status(201).json(rows[0]);
+  })
+);
+
+router.post(
+  '/entretiens/groupe',
+  requirePermission('rh', 'create'),
+  asyncHandler(async (req, res) => {
+    const parsed = entretienGroupeSchema.safeParse(req.body);
+    if (!parsed.success) throw badRequest('Champs invalides (candidats et date requis)');
+    const en = parsed.data;
+
+    const { rows: candRows } = await query(
+      `SELECT c.id, c.nom, c.prenom, c.email, p.titre AS poste_titre
+         FROM rh_candidats c JOIN rh_postes p ON p.id = c.poste_id
+        WHERE c.id = ANY($1::uuid[])`,
+      [en.candidat_ids]
+    );
+    if (candRows.length !== en.candidat_ids.length) throw badRequest('Certains candidats sont introuvables');
+
+    let meetLink = null;
+    let googleEventId = null;
+    if (en.generer_meet) {
+      const refreshToken = await requireGoogleConnection();
+      const { startDateTime, endDateTime } = meetTimeRange(en.date_entretien, en.heure_debut, en.heure_fin);
+      const meet = await createMeetEvent({
+        refreshToken,
+        summary: `Entretien groupé — ${candRows[0]?.poste_titre || 'Recrutement'}`,
+        description: `Entretien groupé avec ${candRows.length} candidat(s).`,
+        startDateTime,
+        endDateTime,
+        attendeeEmails: candRows.filter((c) => c.email).map((c) => c.email),
+      });
+      meetLink = meet.meetLink;
+      googleEventId = meet.eventId;
+    }
+
+    const groupeId = crypto.randomUUID();
+    const entretiens = await withTransaction(async (client) => {
+      const created = [];
+      for (const cand of candRows) {
+        const { rows } = await client.query(
+          `INSERT INTO rh_entretiens (candidat_id, evaluateur_id, date_entretien, heure_debut, heure_fin, mode, groupe_id, google_event_id, meet_link)
+           VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+           RETURNING *`,
+          [cand.id, en.evaluateur_id || null, en.date_entretien, en.heure_debut || null, en.heure_fin || null, en.mode || 'presentiel', groupeId, googleEventId, meetLink]
+        );
+        created.push({ ...rows[0], candidat: cand });
+      }
+      return created;
+    });
+
+    for (const entretien of entretiens) {
+      await logAudit({ userId: req.user.id, action: 'create', moduleCode: 'rh', entityType: 'entretien', entityId: entretien.id, details: { groupe_id: groupeId }, ip: req.ip });
+      if (entretien.candidat.email) {
+        // eslint-disable-next-line no-await-in-loop
+        await sendEntretienInvitationEmail({
+          to: entretien.candidat.email,
+          fullName: `${entretien.candidat.prenom} ${entretien.candidat.nom}`,
+          posteTitle: entretien.candidat.poste_titre,
+          date: entretien.date_entretien,
+          heureDebut: entretien.heure_debut,
+          meetLink: entretien.meet_link,
+          mode: entretien.mode,
+        }).catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error('[mailer] échec envoi invitation entretien groupé', err.message);
+        });
+        // eslint-disable-next-line no-await-in-loop
+        await query('UPDATE rh_entretiens SET invitation_envoyee_le = now() WHERE id = $1', [entretien.id]);
+      }
+    }
+
+    res.status(201).json(entretiens.map(({ candidat, ...rest }) => ({ ...rest, candidat_nom: candidat.nom, candidat_prenom: candidat.prenom })));
+  })
+);
+
+router.post(
+  '/entretiens/:id/envoyer-invitation',
+  requirePermission('rh', 'update'),
+  asyncHandler(async (req, res) => {
+    const { rows } = await query(
+      `SELECT e.*, c.nom, c.prenom, c.email, p.titre AS poste_titre
+         FROM rh_entretiens e
+         JOIN rh_candidats c ON c.id = e.candidat_id
+         JOIN rh_postes p ON p.id = c.poste_id
+        WHERE e.id = $1`,
+      [req.params.id]
+    );
+    if (!rows[0]) throw notFound('Entretien introuvable');
+    const en = rows[0];
+    if (!en.email) throw badRequest("Ce candidat n'a pas d'adresse e-mail renseignée");
+
+    await sendEntretienInvitationEmail({
+      to: en.email,
+      fullName: `${en.prenom} ${en.nom}`,
+      posteTitle: en.poste_titre,
+      date: en.date_entretien,
+      heureDebut: en.heure_debut,
+      meetLink: en.meet_link,
+      mode: en.mode,
+    });
+    await query('UPDATE rh_entretiens SET invitation_envoyee_le = now() WHERE id = $1', [req.params.id]);
+    res.status(204).send();
   })
 );
 

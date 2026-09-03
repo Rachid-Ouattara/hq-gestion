@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus } from 'lucide-react';
-import { get, post } from '../../lib/api.js';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Calendar, CheckCircle2, Plus } from 'lucide-react';
+import { del, get, post } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
 import DataTable from '../../components/DataTable.jsx';
@@ -15,15 +15,48 @@ export default function Recrutement() {
   const { can } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [googleStatus, setGoogleStatus] = useState(null);
 
   const canCreate = can('rh', 'create');
+  const canUpdate = can('rh', 'update');
 
   const load = () => get('/rh/postes').then(setRows).catch((e) => toast.error(e.message)).finally(() => setLoading(false));
+  const loadGoogleStatus = () => get('/rh/google/status').then(setGoogleStatus).catch(() => {});
   useEffect(() => { load(); }, []);
+  useEffect(() => { loadGoogleStatus(); }, []);
+
+  useEffect(() => {
+    if (searchParams.get('google') === 'connecte') {
+      toast.success('Google Calendar connecté');
+      loadGoogleStatus();
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
+  const connecterGoogle = async () => {
+    try {
+      const { url } = await get('/rh/google/connect-url');
+      window.location.href = url;
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
+  const deconnecterGoogle = async () => {
+    try {
+      await del('/rh/google/disconnect');
+      toast.success('Google Calendar déconnecté');
+      loadGoogleStatus();
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
 
   const submit = async () => {
     try {
@@ -48,6 +81,29 @@ export default function Recrutement() {
 
   return (
     <div>
+      {canUpdate && googleStatus?.configure && (
+        <div className="card mb-4 flex flex-wrap items-center justify-between gap-3 p-4">
+          <div className="flex items-center gap-2">
+            <Calendar size={18} className={googleStatus.connected ? 'text-emerald-500' : 'text-slate-400'} />
+            <div>
+              <p className="text-sm font-medium text-slate-700">Google Calendar</p>
+              <p className="text-xs text-slate-400">
+                {googleStatus.connected ? (
+                  <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-emerald-500" /> Connecté ({googleStatus.compte_email})</span>
+                ) : (
+                  'Non connecté — les liens Google Meet automatiques sont indisponibles.'
+                )}
+              </p>
+            </div>
+          </div>
+          {googleStatus.connected ? (
+            <button className="btn-ghost !py-1.5 text-xs" onClick={deconnecterGoogle}>Déconnecter</button>
+          ) : (
+            <button className="btn-ghost !py-1.5 text-xs" onClick={connecterGoogle}>Connecter Google Calendar</button>
+          )}
+        </div>
+      )}
+
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-slate-500">{rows.length} poste(s)</p>
         {canCreate && (

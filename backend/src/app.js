@@ -14,6 +14,8 @@ import achatsRoutes from './modules/achats/index.js';
 import stocksRoutes from './modules/stocks/index.js';
 import administrativeRoutes from './modules/administrative/index.js';
 import rhRoutes from './modules/rh/index.js';
+import rhGoogleAuthRoutes from './modules/rh/googleAuth.routes.js';
+import rhPublicRoutes from './modules/rh/public.routes.js';
 import financeRoutes from './modules/finance/index.js';
 import commercialRoutes from './modules/commercial/index.js';
 import formationRoutes from './modules/formation/index.js';
@@ -39,6 +41,10 @@ export function createApp() {
   app.use('/api/achats', achatsRoutes);
   app.use('/api/stocks', stocksRoutes);
   app.use('/api/administrative', administrativeRoutes);
+  app.use('/api/public/recrutement', rhPublicRoutes);
+  // Doit être monté avant /api/rh : son /callback (redirection Google) ne peut
+  // pas passer par le `router.use(authenticate)` global de rh/index.js.
+  app.use('/api/rh/google', rhGoogleAuthRoutes);
   app.use('/api/rh', rhRoutes);
   app.use('/api/finance', financeRoutes);
   app.use('/api/commercial', commercialRoutes);

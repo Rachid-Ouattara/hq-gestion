@@ -85,3 +85,43 @@ export async function sendNotificationEmail({ to, fullName, titre, message, acti
     html: notificationEmailHtml({ fullName, titre, message, actionUrl }),
   });
 }
+
+function entretienEmailHtml({ fullName, posteTitle, date, heureDebut, meetLink, mode }) {
+  const dateLabel = new Date(date).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  return `
+  <div style="background:#EAFBFC;padding:32px 16px;font-family:Helvetica,Arial,sans-serif;">
+    <table role="presentation" width="100%" style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;">
+      <tr><td style="background:#0B1220;padding:24px 32px;">
+        <span style="color:#F5931D;font-weight:700;font-size:20px;">hq</span>
+        <span style="color:#ffffff;font-weight:700;font-size:20px;">Gestion</span>
+      </td></tr>
+      <tr><td style="padding:32px;">
+        <p style="color:#0B1220;font-size:16px;margin:0 0 16px;">Bonjour ${fullName || ''},</p>
+        <p style="color:#3A4356;font-size:14px;line-height:1.6;margin:0 0 16px;">
+          Votre entretien pour le poste <strong>${posteTitle}</strong> est confirmé :
+        </p>
+        <p style="color:#0B1220;font-size:15px;font-weight:700;margin:0 0 4px;">${dateLabel}${heureDebut ? ` à ${heureDebut.slice(0, 5)}` : ''}</p>
+        <p style="color:#3A4356;font-size:14px;margin:0 0 24px;">${mode === 'visio' ? 'Entretien en visioconférence' : 'Entretien en présentiel'}</p>
+        ${meetLink ? `<a href="${meetLink}" style="display:inline-block;background:#F5931D;color:#ffffff;text-decoration:none;
+           font-weight:600;font-size:14px;padding:12px 28px;border-radius:999px;">Rejoindre sur Google Meet</a>` : ''}
+        <p style="color:#8994AC;font-size:12px;line-height:1.6;margin:24px 0 0;">
+          Pour toute question, répondez directement à cet e-mail.
+        </p>
+      </td></tr>
+    </table>
+  </div>`;
+}
+
+export async function sendEntretienInvitationEmail({ to, fullName, posteTitle, date, heureDebut, meetLink, mode }) {
+  if (!transporter) {
+    // eslint-disable-next-line no-console
+    console.warn(`[mailer] SMTP non configuré — invitation entretien pour ${to} (${posteTitle}, ${date}${meetLink ? `, ${meetLink}` : ''})`);
+    return;
+  }
+  await transporter.sendMail({
+    from: config.smtp.from,
+    to,
+    subject: `Entretien — ${posteTitle} — HQ Gestion`,
+    html: entretienEmailHtml({ fullName, posteTitle, date, heureDebut, meetLink, mode }),
+  });
+}

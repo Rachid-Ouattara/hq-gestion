@@ -82,6 +82,7 @@ export const posteSchema = z.object({
   type_contrat: z.enum(['cdi', 'cdd', 'stage', 'consultant']),
   description: optionalText,
   nombre_postes: z.coerce.number().int().min(1).optional(),
+  avis_publie: z.coerce.boolean().optional(),
 });
 
 export const candidatSchema = z.object({
@@ -102,6 +103,24 @@ export const entretienSchema = z.object({
   mode: z.enum(['presentiel', 'visio']).optional(),
   score: z.coerce.number().min(0).max(20).optional().nullable(),
   commentaire: optionalText,
+  generer_meet: z.coerce.boolean().optional(),
+});
+
+export const entretienGroupeSchema = z.object({
+  candidat_ids: z.array(z.string().uuid()).min(1),
+  evaluateur_id: optionalUuid,
+  date_entretien: z.string(),
+  heure_debut: z.string().optional().nullable(),
+  heure_fin: z.string().optional().nullable(),
+  mode: z.enum(['presentiel', 'visio']).optional(),
+  generer_meet: z.coerce.boolean().optional(),
+});
+
+export const candidaturePubliqueSchema = z.object({
+  nom: z.string().trim().min(2),
+  prenom: z.string().trim().min(2),
+  email: z.string().trim().email(),
+  telephone: optionalText,
 });
 
 export const embaucherSchema = z.object({
