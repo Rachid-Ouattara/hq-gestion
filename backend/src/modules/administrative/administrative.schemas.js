@@ -35,6 +35,8 @@ export const agendaSchema = z.object({
   date_fin: z.string(),
   lieu: optionalText,
   participants: optionalText,
+  participant_ids: z.array(z.string().uuid()).optional(),
+  generer_meet: z.coerce.boolean().optional(),
 });
 
 export const noteSchema = z.object({

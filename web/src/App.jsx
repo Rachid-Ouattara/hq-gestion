@@ -30,10 +30,14 @@ import Alertes from './pages/stocks/Alertes.jsx';
 import AdministrativeLayout from './pages/administrative/AdministrativeLayout.jsx';
 import AdministrativeApercu from './pages/administrative/Apercu.jsx';
 import Courrier from './pages/administrative/Courrier.jsx';
+import CourrierDetail from './pages/administrative/CourrierDetail.jsx';
 import ArchivesAdmin from './pages/administrative/Archives.jsx';
+import ArchiveDetail from './pages/administrative/ArchiveDetail.jsx';
 import DocumentsAdmin from './pages/administrative/Documents.jsx';
+import DocumentDetail from './pages/administrative/DocumentDetail.jsx';
 import Agenda from './pages/administrative/Agenda.jsx';
 import Notes from './pages/administrative/Notes.jsx';
+import NoteDetail from './pages/administrative/NoteDetail.jsx';
 import RhLayout from './pages/rh/RhLayout.jsx';
 import RhApercu from './pages/rh/Apercu.jsx';
 import Employes from './pages/rh/Employes.jsx';
@@ -131,10 +135,14 @@ export default function App() {
               <Route index element={<AdministrativeApercu />} />
               <Route path="courrier-entrant" element={<Courrier sens="entrant" />} />
               <Route path="courrier-sortant" element={<Courrier sens="sortant" />} />
+              <Route path="courrier/:id" element={<CourrierDetail />} />
               <Route path="archives" element={<ArchivesAdmin />} />
+              <Route path="archives/:id" element={<ArchiveDetail />} />
               <Route path="documents" element={<DocumentsAdmin />} />
+              <Route path="documents/:id" element={<DocumentDetail />} />
               <Route path="agenda" element={<Agenda />} />
               <Route path="notes" element={<Notes />} />
+              <Route path="notes/:id" element={<NoteDetail />} />
             </Route>
             <Route path="modules/rh" element={<RhLayout />}>
               <Route index element={<RhApercu />} />

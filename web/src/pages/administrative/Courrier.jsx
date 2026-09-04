@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plus, Search } from 'lucide-react';
 import { get, post } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
@@ -18,19 +19,25 @@ const EMPTY_FORM = { objet: '', correspondant: '', mode_transmission: '', observ
 export default function Courrier({ sens }) {
   const { can } = useAuth();
   const toast = useToast();
+  const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [archives, setArchives] = useState([]);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [q, setQ] = useState('');
+  const [statutFilter, setStatutFilter] = useState('');
 
   const canCreate = can('administrative', 'create');
-  const canUpdate = can('administrative', 'update');
   const labels = LABELS[sens];
 
-  const load = () => get(`/administrative/courrier?sens=${sens}`).then(setRows).catch((e) => toast.error(e.message)).finally(() => setLoading(false));
-  useEffect(() => { load(); }, [sens]);
-  useEffect(() => { get('/administrative/archives?statut=ouvert').then(setArchives).catch(() => {}); }, []);
+  const load = () => {
+    setLoading(true);
+    const params = new URLSearchParams({ sens });
+    if (q) params.set('q', q);
+    if (statutFilter) params.set('statut', statutFilter);
+    get(`/administrative/courrier?${params}`).then(setRows).catch((e) => toast.error(e.message)).finally(() => setLoading(false));
+  };
+  useEffect(() => { load(); }, [sens, statutFilter]);
 
   const submit = async () => {
     try {
@@ -44,35 +51,12 @@ export default function Courrier({ sens }) {
     }
   };
 
-  const archiver = async (row) => {
-    if (archives.length === 0) {
-      toast.error("Créez d'abord un dossier d'archive (onglet Classement & Archivage).");
-      return;
-    }
-    try {
-      await post(`/administrative/courrier/${row.id}/archiver`, { archive_id: archives[0].id });
-      toast.success('Mis à jour');
-      load();
-    } catch (e) {
-      toast.error(e.message);
-    }
-  };
-
   const columns = [
     { key: 'numero', label: 'N°' },
     { key: 'objet', label: 'Objet' },
     { key: 'correspondant', label: labels.correspondant },
     { key: 'date_courrier', label: 'Date', render: (r) => new Date(r.date_courrier).toLocaleDateString('fr-FR') },
     { key: 'statut', label: 'Statut', render: (r) => <StatusBadge status={r.statut} map={COURRIER_STATUT} /> },
-    ...(canUpdate
-      ? [{
-          key: 'actions',
-          label: '',
-          render: (r) => r.statut !== 'archive' && (
-            <button className="text-xs text-hq-blue hover:underline" onClick={() => archiver(r)}>Archiver</button>
-          ),
-        }]
-      : []),
   ];
 
   return (
@@ -86,7 +70,25 @@ export default function Courrier({ sens }) {
         )}
       </div>
 
-      <DataTable columns={columns} rows={rows} loading={loading} emptyLabel={`Aucun ${labels.title.toLowerCase()}.`} />
+      <div className="mb-4 flex flex-wrap gap-2">
+        <div className="relative flex-1 min-w-[14rem]">
+          <Search size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            className="input pl-9"
+            placeholder="Rechercher un objet, un correspondant…"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && load()}
+            onBlur={load}
+          />
+        </div>
+        <select className="input w-auto" value={statutFilter} onChange={(e) => setStatutFilter(e.target.value)}>
+          <option value="">Tous les statuts</option>
+          {Object.entries(COURRIER_STATUT).map(([code, s]) => <option key={code} value={code}>{s.label}</option>)}
+        </select>
+      </div>
+
+      <DataTable columns={columns} rows={rows} loading={loading} onRowClick={(r) => navigate(`/modules/administrative/courrier/${r.id}`)} emptyLabel={`Aucun ${labels.title.toLowerCase()}.`} />
 
       <SlideOver open={open} onClose={() => setOpen(false)} title={labels.action}>
         <div className="space-y-3">

@@ -14,6 +14,11 @@ const ROUTE_MAP = {
   'rh:contrat': (id) => `/modules/rh/employes/${id}`,
   'rh:entretien': (id) => `/modules/rh/candidats/${id}`,
   'rh:employe': (id) => `/modules/rh/employes/${id}`,
+  'administrative:courrier': (id) => `/modules/administrative/courrier/${id}`,
+  'administrative:document': (id) => `/modules/administrative/documents/${id}`,
+  'administrative:archive': (id) => `/modules/administrative/archives/${id}`,
+  'administrative:note': (id) => `/modules/administrative/notes/${id}`,
+  'administrative:agenda': () => '/modules/administrative/agenda',
 };
 
 function timeAgo(dateStr) {

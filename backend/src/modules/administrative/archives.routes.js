@@ -37,7 +37,12 @@ router.get(
   '/:id',
   requirePermission('administrative', 'read'),
   asyncHandler(async (req, res) => {
-    const { rows } = await query('SELECT * FROM administrative_archives WHERE id = $1', [req.params.id]);
+    const { rows } = await query(
+      `SELECT a.*, u.full_name AS responsable_nom
+         FROM administrative_archives a LEFT JOIN users u ON u.id = a.responsable_id
+        WHERE a.id = $1`,
+      [req.params.id]
+    );
     if (!rows[0]) throw notFound('Dossier introuvable');
     res.json(rows[0]);
   })

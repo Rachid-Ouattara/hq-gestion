@@ -3,8 +3,10 @@ import { asyncHandler, badRequest, notFound } from '../../lib/http.js';
 import { requirePermission } from '../../middleware/rbac.js';
 import { logAudit } from '../../middleware/audit.js';
 import { query, withTransaction } from '../../db/pool.js';
-import { notifyRole } from '../../lib/notifications.js';
+import { notifyRole, notifyUser } from '../../lib/notifications.js';
 import { courrierSchema } from './administrative.schemas.js';
+
+const STATUT_ORDER = ['nouveau', 'en_traitement', 'traite'];
 
 const router = Router();
 const STAFF_ROLES = ['admin', 'secretaire', 'direction'];
@@ -49,8 +51,10 @@ router.get(
   requirePermission('administrative', 'read'),
   asyncHandler(async (req, res) => {
     const { rows } = await query(
-      `SELECT c.*, a.libelle AS archive_libelle
-         FROM administrative_courrier c LEFT JOIN administrative_archives a ON a.id = c.archive_id
+      `SELECT c.*, a.libelle AS archive_libelle, u.full_name AS traite_par_nom
+         FROM administrative_courrier c
+         LEFT JOIN administrative_archives a ON a.id = c.archive_id
+         LEFT JOIN users u ON u.id = c.traite_par
         WHERE c.id = $1`,
       [req.params.id]
     );
@@ -112,6 +116,50 @@ router.patch(
     if (!rows[0]) throw notFound('Courrier introuvable');
     await logAudit({ userId: req.user.id, action: 'update', moduleCode: 'administrative', entityType: 'courrier', entityId: rows[0].id, ip: req.ip });
     res.json(rows[0]);
+  })
+);
+
+router.post(
+  '/:id/statut',
+  requirePermission('administrative', 'update'),
+  asyncHandler(async (req, res) => {
+    const statut = req.body?.statut;
+    if (!STATUT_ORDER.includes(statut)) throw badRequest('Statut invalide');
+
+    const courrier = await withTransaction(async (client) => {
+      const { rows: current } = await client.query(
+        'SELECT * FROM administrative_courrier WHERE id = $1 FOR UPDATE',
+        [req.params.id]
+      );
+      if (!current[0]) throw notFound('Courrier introuvable');
+      const currentIndex = STATUT_ORDER.indexOf(current[0].statut);
+      const targetIndex = STATUT_ORDER.indexOf(statut);
+      if (currentIndex === -1 || targetIndex !== currentIndex + 1) {
+        throw badRequest(`Un courrier « ${current[0].statut} » ne peut passer qu'à l'étape suivante`);
+      }
+
+      const { rows } = await client.query(
+        `UPDATE administrative_courrier SET statut = $2, traite_par = $3, updated_at = now()
+         WHERE id = $1 RETURNING *`,
+        [req.params.id, statut, req.user.id]
+      );
+
+      if (statut === 'traite' && rows[0].created_by && rows[0].created_by !== req.user.id) {
+        await notifyUser(client, {
+          userId: rows[0].created_by,
+          titre: 'Votre courrier a été traité',
+          message: `Le courrier « ${rows[0].objet} » (${rows[0].numero}) a été traité.`,
+          moduleCode: 'administrative',
+          entityType: 'courrier',
+          entityId: rows[0].id,
+        });
+      }
+
+      return rows[0];
+    });
+
+    await logAudit({ userId: req.user.id, action: 'update', moduleCode: 'administrative', entityType: 'courrier', entityId: courrier.id, details: { statut }, ip: req.ip });
+    res.json(courrier);
   })
 );
 

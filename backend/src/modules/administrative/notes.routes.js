@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { asyncHandler, badRequest, notFound } from '../../lib/http.js';
 import { requirePermission } from '../../middleware/rbac.js';
 import { logAudit } from '../../middleware/audit.js';
-import { query } from '../../db/pool.js';
+import { query, withTransaction } from '../../db/pool.js';
+import { notifyRole } from '../../lib/notifications.js';
 import { noteSchema } from './administrative.schemas.js';
 
 const router = Router();
@@ -83,14 +84,27 @@ router.post(
   '/:id/diffuser',
   requirePermission('administrative', 'update'),
   asyncHandler(async (req, res) => {
-    const { rows } = await query(
-      `UPDATE administrative_notes SET statut = 'diffusee', updated_at = now()
-       WHERE id = $1 AND statut = 'brouillon' RETURNING *`,
-      [req.params.id]
-    );
-    if (!rows[0]) throw badRequest('Seule une note en brouillon peut être diffusée');
-    await logAudit({ userId: req.user.id, action: 'update', moduleCode: 'administrative', entityType: 'note', entityId: rows[0].id, details: { statut: 'diffusee' }, ip: req.ip });
-    res.json(rows[0]);
+    const note = await withTransaction(async (client) => {
+      const { rows } = await client.query(
+        `UPDATE administrative_notes SET statut = 'diffusee', updated_at = now()
+         WHERE id = $1 AND statut = 'brouillon' RETURNING *`,
+        [req.params.id]
+      );
+      if (!rows[0]) throw badRequest('Seule une note en brouillon peut être diffusée');
+
+      // `destinataires` reste un champ texte libre (pas de ciblage individuel réel
+      // possible sans transformer ce champ en sélection d'utilisateurs) — on diffuse
+      // donc au personnel dans son ensemble plutôt qu'à des comptes précis.
+      const titre = 'Nouvelle note de service';
+      const message = `${rows[0].objet}${rows[0].destinataires ? ` — Destinataires : ${rows[0].destinataires}` : ''}`;
+      await notifyRole(client, { roleCode: 'direction', titre, message, moduleCode: 'administrative', entityType: 'note', entityId: rows[0].id });
+      await notifyRole(client, { roleCode: 'secretaire', titre, message, moduleCode: 'administrative', entityType: 'note', entityId: rows[0].id });
+
+      return rows[0];
+    });
+
+    await logAudit({ userId: req.user.id, action: 'update', moduleCode: 'administrative', entityType: 'note', entityId: note.id, details: { statut: 'diffusee' }, ip: req.ip });
+    res.json(note);
   })
 );
 
