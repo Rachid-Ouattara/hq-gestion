@@ -21,6 +21,16 @@
     --rh-tint: #E9F5EE;
     --prospection: #A9791E;
     --prospection-tint: #F6EFDD;
+    --administrative: #2456A6;
+    --administrative-tint: #E8EEFA;
+    --achats: #7B4B9E;
+    --achats-tint: #F1E9F7;
+    --stocks: #C96A1F;
+    --stocks-tint: #FCEEE0;
+    --finance: #22897B;
+    --finance-tint: #E3F5F2;
+    --commercial: #2E63B8;
+    --commercial-tint: #E8F0FC;
     --code-bg: #EDF1F7;
     --shadow: 0 1px 2px rgba(28,36,48,0.04), 0 6px 20px rgba(28,36,48,0.06);
   }
@@ -45,6 +55,16 @@
       --rh-tint: #1E3428;
       --prospection: #D9B368;
       --prospection-tint: #3A3220;
+      --administrative: #7FA6E8;
+      --administrative-tint: #1E2E42;
+      --achats: #C79EE0;
+      --achats-tint: #2E2438;
+      --stocks: #F2A66E;
+      --stocks-tint: #3A2A1A;
+      --finance: #6EC9BC;
+      --finance-tint: #1A342F;
+      --commercial: #8AB4EA;
+      --commercial-tint: #1E2C42;
       --code-bg: #232A36;
       --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 6px 24px rgba(0,0,0,0.35);
     }
@@ -68,6 +88,16 @@
     --rh-tint: #1E3428;
     --prospection: #D9B368;
     --prospection-tint: #3A3220;
+    --administrative: #7FA6E8;
+    --administrative-tint: #1E2E42;
+    --achats: #C79EE0;
+    --achats-tint: #2E2438;
+    --stocks: #F2A66E;
+    --stocks-tint: #3A2A1A;
+    --finance: #6EC9BC;
+    --finance-tint: #1A342F;
+    --commercial: #8AB4EA;
+    --commercial-tint: #1E2C42;
     --code-bg: #232A36;
     --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 6px 24px rgba(0,0,0,0.35);
   }
@@ -223,6 +253,16 @@
   .module-rh .num, .module-rh h2 { color: var(--rh); }
   .module-prospection .module-head { background: var(--prospection-tint); }
   .module-prospection .num, .module-prospection h2 { color: var(--prospection); }
+  .module-administrative .module-head { background: var(--administrative-tint); }
+  .module-administrative .num, .module-administrative h2 { color: var(--administrative); }
+  .module-achats .module-head { background: var(--achats-tint); }
+  .module-achats .num, .module-achats h2 { color: var(--achats); }
+  .module-stocks .module-head { background: var(--stocks-tint); }
+  .module-stocks .num, .module-stocks h2 { color: var(--stocks); }
+  .module-finance .module-head { background: var(--finance-tint); }
+  .module-finance .num, .module-finance h2 { color: var(--finance); }
+  .module-commercial .module-head { background: var(--commercial-tint); }
+  .module-commercial .num, .module-commercial h2 { color: var(--commercial); }
 
   h2, h3, h4 { break-after: avoid-page; page-break-after: avoid; }
 
@@ -236,6 +276,11 @@
   .module-formation h3 { border-left-color: var(--formation); }
   .module-rh h3 { border-left-color: var(--rh); }
   .module-prospection h3 { border-left-color: var(--prospection); }
+  .module-administrative h3 { border-left-color: var(--administrative); }
+  .module-achats h3 { border-left-color: var(--achats); }
+  .module-stocks h3 { border-left-color: var(--stocks); }
+  .module-finance h3 { border-left-color: var(--finance); }
+  .module-commercial h3 { border-left-color: var(--commercial); }
 
   h4 {
     font-size: 0.98rem;
@@ -361,6 +406,11 @@
   .module-formation .steps li::before { background: var(--formation); }
   .module-rh .steps li::before { background: var(--rh); }
   .module-prospection .steps li::before { background: var(--prospection); }
+  .module-administrative .steps li::before { background: var(--administrative); }
+  .module-achats .steps li::before { background: var(--achats); }
+  .module-stocks .steps li::before { background: var(--stocks); }
+  .module-finance .steps li::before { background: var(--finance); }
+  .module-commercial .steps li::before { background: var(--commercial); }
 
   /* tables */
   .table-wrap { overflow-x: auto; margin: 16px 0 24px; border: 1px solid var(--line); border-radius: 10px; }
@@ -388,6 +438,25 @@
   .mini-card p { margin: 0; font-size: 0.84rem; color: var(--ink-soft); }
 
   .role-tag { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; padding: 2px 8px; border-radius: 5px; background: var(--surface-2); color: var(--ink-soft); }
+
+  .screenshot {
+    margin: 20px 0 26px;
+    break-inside: avoid-page;
+    page-break-inside: avoid;
+  }
+  .screenshot img {
+    display: block;
+    width: 100%;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+  }
+  .screenshot figcaption {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    text-align: center;
+  }
 
   hr.soft { border: none; border-top: 1px solid var(--line); margin: 48px 0; }
 
@@ -451,6 +520,48 @@
     </div>
 
     <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--administrative)"></span>Gestion Administrative</div>
+      <a href="#a-courrier">Courrier</a>
+      <a href="#a-archives">Classement &amp; archivage</a>
+      <a href="#a-documents">Documents administratifs</a>
+      <a href="#a-agenda">Agenda &amp; rendez-vous</a>
+      <a href="#a-notes">Notes &amp; mémos</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--achats)"></span>Gestion des Achats</div>
+      <a href="#ac-demandes">Demandes d'achat</a>
+      <a href="#ac-bons">Bons de commande</a>
+      <a href="#ac-receptions">Réceptions</a>
+      <a href="#ac-paiements">Paiements</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--stocks)"></span>Gestion des Stocks</div>
+      <a href="#s-articles">Articles &amp; catégories</a>
+      <a href="#s-mouvements">Entrées &amp; sorties</a>
+      <a href="#s-inventaires">Inventaires</a>
+      <a href="#s-alertes">Alertes de réapprovisionnement</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--finance)"></span>Gestion Financière</div>
+      <a href="#fi-comptes">Comptabilité générale</a>
+      <a href="#fi-recettes-depenses">Recettes &amp; dépenses</a>
+      <a href="#fi-budgets">Budgets</a>
+      <a href="#fi-rapports">États financiers</a>
+    </div>
+
+    <div class="toc-group">
+      <div class="toc-group-label"><span class="dot" style="background:var(--commercial)"></span>Gestion Commerciale</div>
+      <a href="#co-clients">Clients</a>
+      <a href="#co-devis">Devis</a>
+      <a href="#co-commandes">Commandes &amp; facturation</a>
+      <a href="#co-encaissements">Encaissements</a>
+    </div>
+
+    <div class="toc-group">
+      <a href="#reporting" style="padding-left:8px; font-weight:600; color:var(--ink);">Tableaux de bord &amp; Reporting</a>
       <a href="#notifications" style="padding-left:8px; font-weight:600; color:var(--ink);">Notifications</a>
       <a href="#roles" style="padding-left:8px; font-weight:600; color:var(--ink);">Rôles &amp; accès</a>
     </div>
@@ -461,12 +572,13 @@
       <p class="eyebrow">Manuel d'utilisation</p>
       <h1>Piloter Headquarters avec HQ Gestion</h1>
       <p class="lede">
-        Ce guide s'adresse à la <strong>Direction</strong> et au <strong>responsable RH</strong>. Il couvre les trois
-        volets qui structurent l'activité de l'entreprise au quotidien : la relation avec les écoles partenaires et
-        l'enseignement sur le terrain, la gestion du personnel, et la prospection de nouvelles écoles cibles.
+        Ce guide s'adresse à la <strong>Direction</strong> et au <strong>responsable RH</strong>, et couvre désormais
+        l'ensemble de l'application : l'administration courante (courrier, archives, agenda), les ressources
+        humaines, la relation avec les écoles partenaires et la prospection, ainsi que les achats, les stocks, la
+        finance et le commercial.
       </p>
       <div class="meta">
-        <span>3 modules couverts</span>
+        <span>9 modules couverts</span>
         <span>Rôles concernés : Direction, Secrétaire, Admin</span>
         <span>Connexion : e-mail + mot de passe sur l'écran d'accueil</span>
       </div>
@@ -778,11 +890,47 @@
         <span class="pill green">Embauché</span>
       </div>
       <p>(avec l'issue <span class="pill red">Refusé</span> possible à tout moment).</p>
+
+      <h4>Candidature en ligne</h4>
       <p>
-        Depuis la fiche d'un candidat, planifiez un ou plusieurs <strong>entretiens</strong> : date, heure,
-        évaluateur, mode (présentiel ou visio). Une fois réalisé, l'entretien reçoit une note sur 20 et un
-        commentaire. HQ Gestion envoie un rappel automatique à l'évaluateur la veille de l'entretien.
+        Plutôt que de saisir chaque candidat à la main, publiez l'offre : le bouton <span class="ui btn">Publier
+        l'offre</span> sur la fiche du poste génère un <strong>lien public</strong>, utilisable par n'importe qui
+        sans compte HQ Gestion. Les candidats y consultent l'annonce, téléchargent les documents que vous avez joints
+        à la fiche du poste (fiche de poste, description détaillée…), et postulent directement avec leur CV — chaque
+        candidature arrive automatiquement dans la liste, avec la source « Lien public », et notifie la Direction.
       </p>
+      <div class="screenshot">
+        <img src="{{SHOT:rh-poste-publie}}" alt="Fiche d'un poste publié, avec le lien public, les boutons Copier le lien et Partager sur Facebook" />
+        <figcaption>Une fois l'offre publiée : lien public, copie en un clic, et partage direct sur Facebook.</figcaption>
+      </div>
+      <p>
+        Le bouton <span class="ui btn">Partager sur Facebook</span> ouvre directement la fenêtre de publication
+        Facebook avec le lien pré-rempli — pratique pour diffuser l'offre sans copier-coller manuel.
+      </p>
+
+      <h4>Entretiens individuels ou groupés</h4>
+      <p>
+        Depuis la fiche d'un candidat, planifiez un <strong>entretien individuel</strong> : date, heure, évaluateur,
+        mode (présentiel ou visio). Depuis la fiche d'un poste, cochez plusieurs candidats et utilisez
+        <span class="ui btn">Entretien groupé</span> pour les convoquer tous au même créneau en une seule fois.
+      </p>
+      <p>
+        Si un compte Google Calendar est connecté (voir ci-dessous), une case <strong>Générer un lien Google
+        Meet</strong> apparaît sur le formulaire — le lien est créé automatiquement (un seul lien partagé pour un
+        entretien groupé, sans que les candidats ne voient les coordonnées des autres) et chaque candidat reçoit
+        aussitôt une invitation par e-mail avec la date, l'heure et le lien. Une fois réalisé, l'entretien reçoit une
+        note sur 20 et un commentaire ; HQ Gestion envoie aussi un rappel automatique à l'évaluateur la veille.
+      </p>
+      <div class="callout tip">
+        <span class="tag">Connecter Google Calendar</span>
+        <p>
+          Depuis l'onglet <span class="ui tab">Recrutement</span>, un bandeau en haut de page propose
+          <span class="ui btn">Connecter Google Calendar</span> — après autorisation, tous les entretiens peuvent
+          générer leur lien Meet automatiquement. Un seul compte Google reste connecté à la fois pour toute
+          l'équipe RH.
+        </p>
+      </div>
+
       <div class="callout tip">
         <span class="tag">Embauche</span>
         <p>
@@ -936,6 +1084,407 @@
       </div>
     </section>
 
+    <!-- ================= ADMINISTRATIVE ================= -->
+    <section class="module module-administrative">
+      <div class="module-head" id="a-courrier">
+        <span class="num">04</span>
+        <div>
+          <h2>Gestion Administrative</h2>
+          <p>Courrier, classement et archivage, documents administratifs, agenda et notes de service.</p>
+        </div>
+      </div>
+
+      <p>
+        Sept onglets : <span class="ui tab">Aperçu</span> <span class="ui tab">Courrier entrant</span>
+        <span class="ui tab">Courrier sortant</span> <span class="ui tab">Classement &amp; Archivage</span>
+        <span class="ui tab">Documents administratifs</span> <span class="ui tab">Agenda &amp; Rendez-vous</span>
+        <span class="ui tab">Notes &amp; Mémos</span>.
+      </p>
+
+      <div class="screenshot">
+        <img src="{{SHOT:admin-apercu}}" alt="Aperçu du module Gestion Administrative" />
+        <figcaption>L'onglet Aperçu de Gestion Administrative.</figcaption>
+      </div>
+
+      <h3>Courrier</h3>
+      <p>Un courrier entrant ou sortant suit un circuit à trois étapes avant classement :</p>
+      <div class="flow">
+        <span class="pill blue">Nouveau</span><span class="arrow">→</span>
+        <span class="pill orange">En traitement</span><span class="arrow">→</span>
+        <span class="pill green">Traité</span><span class="arrow">→</span>
+        <span class="pill slate">Archivé</span>
+      </div>
+      <p>
+        Depuis la fiche d'un courrier, les boutons <span class="ui btn">Passer en traitement</span> puis
+        <span class="ui btn">Marquer traité</span> font avancer le circuit dans l'ordre — impossible de sauter une
+        étape. Une fois traité, l'archivage se fait en choisissant un dossier d'archive existant dans une liste
+        déroulante. Vous pouvez joindre le document numérisé directement sur la fiche du courrier.
+      </p>
+      <div class="callout tip">
+        <span class="tag">Self-service</span>
+        <p>
+          Un compte <span class="role-tag">Formateur</span> ou <span class="role-tag">Employé</span> peut demander
+          l'envoi d'un courrier sortant depuis son espace personnel RH (onglet « Mes courriers ») — la demande
+          apparaît directement ici, côté secrétariat, avec une notification automatique. Une fois le courrier marqué
+          traité, l'employé à l'origine de la demande est notifié à son tour.
+        </p>
+      </div>
+
+      <h3 id="a-archives">Classement &amp; Archivage</h3>
+      <p>
+        Un dossier d'archive (code, libellé, support <span class="pill blue">Physique</span> ou
+        <span class="pill blue">Numérique</span>, emplacement, responsable) reçoit les courriers et documents une
+        fois traités. Un dossier passe d'<span class="pill blue">Ouvert</span> à <span class="pill slate">Clos</span>
+        via le bouton <span class="ui btn">Clôturer</span> — les dossiers clos n'apparaissent plus dans la liste
+        proposée lors d'un archivage.
+      </p>
+
+      <h3 id="a-documents">Documents administratifs</h3>
+      <p>
+        Contrats, certificats, procès-verbaux, attestations… chaque document a une date et, en option, une
+        <strong>date d'expiration</strong>. Vous pouvez joindre le fichier lui-même directement sur sa fiche.
+      </p>
+      <div class="callout warn">
+        <span class="tag">Rappel automatique</span>
+        <p>
+          HQ Gestion envoie une notification 30 jours avant l'expiration d'un document, puis fait automatiquement
+          basculer son statut sur <span class="pill red">Expiré</span> le jour venu (avec une nouvelle notification)
+          — inutile de surveiller les échéances manuellement.
+        </p>
+      </div>
+
+      <h3 id="a-agenda">Agenda &amp; Rendez-vous</h3>
+      <p>
+        Un vrai calendrier mensuel : naviguez d'un mois à l'autre, le jour courant est mis en évidence, chaque
+        événement apparaît sous forme de pastille sur sa date. Cliquez sur une date pour créer un rendez-vous,
+        cliquez sur un événement existant pour voir son détail.
+      </p>
+
+      <div class="screenshot">
+        <img src="{{SHOT:admin-agenda}}" alt="Vue calendrier de l'Agenda avec deux rendez-vous planifiés" />
+        <figcaption>L'onglet Agenda &amp; Rendez-vous — vue mensuelle avec les événements du mois.</figcaption>
+      </div>
+
+      <div class="card-grid">
+        <div class="mini-card">
+          <h5>Participants internes</h5>
+          <p>Cochez les comptes HQ Gestion invités : chacun reçoit une notification individuelle dès la création de l'événement.</p>
+        </div>
+        <div class="mini-card">
+          <h5>Invités externes</h5>
+          <p>Un champ texte libre pour les personnes hors de l'application (ex. un représentant d'école partenaire).</p>
+        </div>
+      </div>
+      <p>
+        Si un compte Google Calendar est connecté (voir <a href="#rh-recrutement">Recrutement</a>, où se fait la
+        connexion), une case <strong>Générer un lien Google Meet</strong> apparaît sur le formulaire — le lien est
+        créé automatiquement et rejoint la fiche de l'événement. Un rendez-vous se marque
+        <span class="ui btn">Terminé</span> ou <span class="ui btn">Annulé</span> depuis sa fiche.
+      </p>
+
+      <h3 id="a-notes">Notes &amp; Mémos</h3>
+      <p>
+        Une note se rédige en <span class="pill slate">Brouillon</span> (modifiable librement), puis se
+        <span class="ui btn">Diffuse</span> — une fois diffusée, elle devient définitive
+        (<span class="pill green">Diffusée</span>) et notifie la Direction et le Secrétariat. Le champ
+        « Destinataires » reste indicatif (texte libre, ex. « Tous les chefs de service ») : la diffusion réelle se
+        fait au personnel dans son ensemble plutôt qu'à des comptes précis.
+      </p>
+    </section>
+
+    <!-- ================= ACHATS ================= -->
+    <section class="module module-achats">
+      <div class="module-head" id="ac-demandes">
+        <span class="num">05</span>
+        <div>
+          <h2>Gestion des Achats</h2>
+          <p>Demandes d'achat, fournisseurs, bons de commande, réceptions et suivi des paiements.</p>
+        </div>
+      </div>
+
+      <p>
+        Six onglets : <span class="ui tab">Aperçu</span> <span class="ui tab">Demandes d'achat</span>
+        <span class="ui tab">Fournisseurs</span> <span class="ui tab">Bons de commande</span>
+        <span class="ui tab">Réceptions</span> <span class="ui tab">Paiements</span>.
+      </p>
+
+      <div class="screenshot">
+        <img src="{{SHOT:achats-apercu}}" alt="Aperçu du module Gestion des Achats" />
+        <figcaption>L'onglet Aperçu de Gestion des Achats.</figcaption>
+      </div>
+
+      <h3>Demandes d'achat</h3>
+      <p>Toute commande démarre par une demande, avec ses lignes (désignation, quantité, prix estimé) :</p>
+      <div class="flow">
+        <span class="pill slate">Brouillon</span><span class="arrow">→</span>
+        <span class="pill orange">Soumise</span><span class="arrow">→</span>
+        <span class="pill green">Validée</span> <span style="color:var(--ink-faint)">ou</span> <span class="pill red">Rejetée</span>
+      </div>
+      <div class="screenshot">
+        <img src="{{SHOT:achats-demande-detail}}" alt="Fiche d'une demande d'achat en attente de validation, avec les boutons Valider et Rejeter" />
+        <figcaption>Une demande soumise, prête à être validée par la Direction — avec commentaire optionnel.</figcaption>
+      </div>
+      <p>
+        Soumettre une demande notifie automatiquement la Direction. Seule une demande <span class="pill green">Validée</span>
+        peut donner lieu à un bon de commande.
+      </p>
+
+      <h3>Fournisseurs</h3>
+      <p>Fiche simple (nom, contact, coordonnées, numéro fiscal) avec une bascule actif / inactif.</p>
+
+      <h3 id="ac-bons">Bons de commande</h3>
+      <p>
+        Un bon de commande se crée soit à partir d'une demande validée (<span class="ui btn accent2">Créer un bon de commande</span>
+        depuis sa fiche — une seule demande ne peut donner qu'un seul bon), soit directement pour un achat non
+        planifié à l'avance.
+      </p>
+      <div class="flow">
+        <span class="pill slate">Brouillon</span><span class="arrow">→</span>
+        <span class="pill orange">Envoyée</span><span class="arrow">→</span>
+        <span class="pill blue">Réceptionnée partielle</span> <span style="color:var(--ink-faint)">/</span> <span class="pill green">Réceptionnée complète</span>
+      </div>
+      <p>
+        Le passage à « réceptionnée » se fait automatiquement au fur et à mesure des réceptions enregistrées — ce
+        n'est jamais une action manuelle. <span class="ui btn">Annuler</span> reste possible tant qu'aucune réception
+        ni aucun paiement n'a été enregistré sur le bon.
+      </p>
+
+      <h3 id="ac-receptions">Réceptions</h3>
+      <p>
+        À la livraison, enregistrez une réception ligne par ligne, avec l'état constaté —
+        <span class="pill green">Conforme</span>, <span class="pill orange">Endommagé</span> ou
+        <span class="pill red">Manquant</span>. Chaque ligne peut être reliée, en option, à un article du module
+        Stocks.
+      </p>
+      <div class="callout tip">
+        <span class="tag">Lien avec les Stocks</span>
+        <p>
+          Seules les lignes marquées <strong>Conforme</strong> et reliées à un article alimentent automatiquement le
+          stock — une entrée est enregistrée dans les mouvements de l'article correspondant, sans double saisie. Un
+          article endommagé ou manquant n'impacte jamais le stock.
+        </p>
+      </div>
+
+      <h3 id="ac-paiements">Paiements</h3>
+      <p>
+        Enregistrez un paiement (espèces, virement, chèque, mobile money) contre un bon de commande — le montant ne
+        peut jamais dépasser le solde restant dû, calculé automatiquement à partir des paiements déjà enregistrés.
+      </p>
+    </section>
+
+    <!-- ================= STOCKS ================= -->
+    <section class="module module-stocks">
+      <div class="module-head" id="s-articles">
+        <span class="num">06</span>
+        <div>
+          <h2>Gestion des Stocks</h2>
+          <p>Articles et catégories, entrées et sorties, inventaires et alertes de réapprovisionnement.</p>
+        </div>
+      </div>
+
+      <p>
+        Cinq onglets : <span class="ui tab">Aperçu</span> <span class="ui tab">Articles &amp; Catégories</span>
+        <span class="ui tab">Entrées en stock</span> <span class="ui tab">Sorties en stock</span>
+        <span class="ui tab">Inventaires</span> <span class="ui tab">Alertes de réapprovisionnement</span>.
+      </p>
+
+      <div class="screenshot">
+        <img src="{{SHOT:stocks-apercu}}" alt="Aperçu du module Gestion des Stocks" />
+        <figcaption>L'onglet Aperçu de Gestion des Stocks.</figcaption>
+      </div>
+
+      <h3>Articles &amp; catégories</h3>
+      <p>
+        Chaque article (référence, désignation, catégorie, unité) porte un <strong>seuil d'alerte</strong> — la
+        quantité en-dessous de laquelle il faut réapprovisionner. La quantité en stock elle-même ne se saisit jamais
+        directement : elle résulte uniquement des mouvements enregistrés.
+      </p>
+
+      <h3 id="s-mouvements">Entrées &amp; sorties de stock</h3>
+      <p>
+        Chaque mouvement (entrée ou sortie, avec motif) est définitif — aucune modification ni suppression a
+        posteriori, pour garder un historique fiable. Une sortie qui ferait passer le stock sous zéro est refusée
+        avec un message explicite.
+      </p>
+      <div class="callout warn">
+        <span class="tag">Alerte automatique</span>
+        <p>
+          Dès qu'un mouvement fait passer un article sous son seuil d'alerte, une notification critique part vers le
+          secrétariat — que le mouvement vienne d'une saisie manuelle, d'une réception d'achat, ou d'un ajustement
+          d'inventaire.
+        </p>
+      </div>
+
+      <h3 id="s-inventaires">Inventaires</h3>
+      <p>
+        Un inventaire fige la quantité théorique de chaque article actif au moment de sa création (éventuellement
+        limité à une seule catégorie). Le comptage se saisit ensuite article par article
+        (<span class="ui btn">Enregistrer le comptage</span>), et la <span class="ui btn">Clôture</span> — possible
+        seulement une fois tous les articles comptés — génère automatiquement les mouvements de stock nécessaires
+        pour corriger chaque écart constaté.
+      </p>
+
+      <h3 id="s-alertes">Alertes de réapprovisionnement</h3>
+      <div class="screenshot">
+        <img src="{{SHOT:stocks-alertes}}" alt="Liste des articles sous leur seuil d'alerte, avec le stock actuel et le seuil pour chacun" />
+        <figcaption>Deux articles sous leur seuil — le stock actuel s'affiche en orange.</figcaption>
+      </div>
+      <p>Une liste à jour en permanence des articles sous leur seuil, avec accès direct à l'écran de saisie d'entrée en stock.</p>
+    </section>
+
+    <!-- ================= FINANCE ================= -->
+    <section class="module module-finance">
+      <div class="module-head" id="fi-comptes">
+        <span class="num">07</span>
+        <div>
+          <h2>Gestion Financière</h2>
+          <p>Comptabilité générale, recettes, dépenses, budgets et états financiers.</p>
+        </div>
+      </div>
+
+      <div class="callout tip">
+        <span class="tag">Simplification assumée</span>
+        <p>
+          Ce module n'est pas une comptabilité en partie double : chaque compte porte simplement un solde net, augmenté
+          par les recettes et diminué par les dépenses qui lui sont rattachées. Suffisant pour un suivi de trésorerie
+          au quotidien, pas destiné à remplacer la comptabilité légale de l'entreprise.
+        </p>
+      </div>
+
+      <p>
+        Six onglets : <span class="ui tab">Aperçu</span> <span class="ui tab">Comptabilité générale</span>
+        <span class="ui tab">Recettes</span> <span class="ui tab">Dépenses</span> <span class="ui tab">Budgets</span>
+        <span class="ui tab">États financiers &amp; Rapports</span>.
+      </p>
+
+      <div class="screenshot">
+        <img src="{{SHOT:finance-apercu}}" alt="Aperçu du module Gestion Financière" />
+        <figcaption>L'onglet Aperçu de Gestion Financière.</figcaption>
+      </div>
+
+      <h3>Comptabilité générale</h3>
+      <p>
+        Chaque compte (code, libellé, type — actif, passif, charge, produit, capitaux) affiche son solde courant.
+        Un compte désactivé n'apparaît plus dans les listes de sélection lors de la saisie d'une recette ou d'une
+        dépense.
+      </p>
+
+      <h3 id="fi-recettes-depenses">Recettes &amp; dépenses</h3>
+      <p>
+        Une recette ou une dépense se rattache à un compte et ajuste immédiatement son solde (recette : +, dépense :
+        −). Ce sont des écritures définitives, sans modification possible après coup. Les dépenses se classent par
+        catégorie (loyer, électricité, eau, fournitures, salaires, transport, autre) et peuvent recevoir une pièce
+        jointe — le justificatif scanné, par exemple.
+      </p>
+
+      <h3 id="fi-budgets">Budgets</h3>
+      <div class="screenshot">
+        <img src="{{SHOT:finance-budget-detail}}" alt="Fiche d'un budget montrant le montant prévu, réalisé et le taux de consommation avec une barre de progression" />
+        <figcaption>Un budget avec ses dépenses imputées et son taux de consommation.</figcaption>
+      </div>
+      <p>
+        Un budget (exercice, libellé, montant prévu) affiche automatiquement son <strong>montant réalisé</strong>
+        (somme des dépenses qui lui sont rattachées) et son <strong>taux de consommation</strong>, avec une barre de
+        progression qui passe au rouge à 100 %. Une fois l'exercice terminé, <span class="ui btn">Clôturer</span> le
+        fige définitivement.
+      </p>
+
+      <h3 id="fi-rapports">États financiers &amp; Rapports</h3>
+      <p>
+        Une synthèse annuelle (année sélectionnable) : total des recettes, total des dépenses, solde net, la
+        situation de tous les comptes actifs, et le réalisé de chaque budget de l'exercice — une vue d'ensemble
+        pour préparer un point avec la Direction.
+      </p>
+    </section>
+
+    <!-- ================= COMMERCIAL ================= -->
+    <section class="module module-commercial">
+      <div class="module-head" id="co-clients">
+        <span class="num">08</span>
+        <div>
+          <h2>Gestion Commerciale</h2>
+          <p>Clients, devis, commandes, facturation et suivi des encaissements.</p>
+        </div>
+      </div>
+
+      <p>
+        Six onglets : <span class="ui tab">Aperçu</span> <span class="ui tab">Clients</span>
+        <span class="ui tab">Devis</span> <span class="ui tab">Commandes</span> <span class="ui tab">Facturation</span>
+        <span class="ui tab">Suivi des encaissements</span>.
+      </p>
+      <p>
+        Les quatre onglets suivants forment une chaîne : un devis accepté peut générer une commande, une commande
+        confirmée peut être facturée, une facture émise reçoit des encaissements jusqu'à son solde à zéro — chaque
+        étape propose un raccourci direct vers la suivante.
+      </p>
+      <div class="flow">
+        <span class="pill" style="background:#F3E8FB;color:#7C3FA6">Devis accepté</span><span class="arrow">→</span>
+        <span class="pill blue">Commande</span><span class="arrow">→</span>
+        <span class="pill orange">Facture</span><span class="arrow">→</span>
+        <span class="pill green">Encaissement</span>
+      </div>
+
+      <div class="screenshot">
+        <img src="{{SHOT:commercial-apercu}}" alt="Aperçu du module Gestion Commerciale" />
+        <figcaption>L'onglet Aperçu de Gestion Commerciale.</figcaption>
+      </div>
+
+      <h3>Clients</h3>
+      <p>Fiche simple (nom, contact, coordonnées, numéro fiscal) avec une bascule actif / inactif.</p>
+
+      <h3 id="co-devis">Devis</h3>
+      <div class="screenshot">
+        <img src="{{SHOT:commercial-devis-detail}}" alt="Fiche d'un devis accepté avec ses lignes et le bouton Créer une commande" />
+        <figcaption>Un devis accepté, prêt à devenir une commande.</figcaption>
+      </div>
+      <div class="flow">
+        <span class="pill slate">Brouillon</span><span class="arrow">→</span>
+        <span class="pill orange">Envoyé</span><span class="arrow">→</span>
+        <span class="pill green">Accepté</span> <span style="color:var(--ink-faint)">ou</span> <span class="pill red">Refusé</span>
+        <span style="color:var(--ink-faint)">ou</span> <span class="pill slate">Expiré</span>
+      </div>
+      <p>Un devis <span class="pill green">Accepté</span> fait apparaître le bouton <span class="ui btn accent2">Créer une commande</span> sur sa fiche.</p>
+
+      <h3 id="co-commandes">Commandes &amp; facturation</h3>
+      <div class="flow">
+        <span class="pill slate">Brouillon</span><span class="arrow">→</span>
+        <span class="pill blue">Confirmée</span><span class="arrow">→</span>
+        <span class="pill green">Livrée</span>
+      </div>
+      <p>
+        Le bouton <span class="ui btn accent2">Facturer</span> apparaît une fois la commande confirmée ou livrée, et
+        pré-remplit une nouvelle facture à partir de son contenu. Une facture suit à son tour
+        <span class="pill blue">Émise</span> → <span class="pill orange">Partiellement payée</span> →
+        <span class="pill green">Payée</span> — ces deux dernières étapes sont automatiques, déclenchées par les
+        encaissements enregistrés, jamais par une action manuelle. Annuler une commande ou une facture reste possible
+        tant qu'aucune facture, respectivement aucun encaissement, n'y est déjà rattaché.
+      </p>
+
+      <h3 id="co-encaissements">Suivi des encaissements</h3>
+      <p>
+        Un encaissement (espèces, virement, chèque, mobile money) s'enregistre contre une facture — le montant ne
+        peut jamais dépasser le solde restant dû. En option, un <strong>compte Finance</strong> peut être choisi : le
+        crédit du paiement s'ajoute alors automatiquement au solde de ce compte, sans double saisie entre les deux
+        modules.
+      </p>
+    </section>
+
+    <!-- ================= REPORTING ================= -->
+    <section id="reporting">
+      <h2 style="font-size:1.5rem; margin-bottom:6px;">Tableaux de bord &amp; Reporting</h2>
+      <div class="callout tip">
+        <span class="tag">État actuel</span>
+        <p>
+          Ce module est aujourd'hui limité à quatre indicateurs globaux — utilisateurs actifs, validations en
+          attente, validations traitées, actions des 7 derniers jours — affichés directement sur le
+          <strong>tableau de bord d'accueil</strong> (la première page après connexion), plutôt que dans un espace
+          dédié. Chaque module dispose déjà de son propre onglet <span class="ui tab">Aperçu</span> avec ses
+          indicateurs détaillés (voir les sections précédentes) ; un véritable espace de rapports personnalisés et
+          d'export inter-modules reste à construire.
+        </p>
+      </div>
+    </section>
+
     <!-- ================= NOTIFICATIONS ================= -->
     <section id="notifications">
       <h2 style="font-size:1.5rem; margin-bottom:6px;">Notifications</h2>
@@ -994,6 +1543,11 @@
             <tr><td>Contrat à échéance dans 7 jours</td><td>Direction</td><td>Oui</td></tr>
             <tr><td>Retard de pointage</td><td>Responsable hiérarchique, sinon Direction</td><td>Non</td></tr>
             <tr><td>Checklist d'intégration incomplète (2 jours)</td><td>Secrétariat</td><td>Non</td></tr>
+            <tr><td>Courrier traité</td><td>Demandeur d'origine (self-service)</td><td>Non</td></tr>
+            <tr><td>Document arrivant à échéance (30 jours) / expiré</td><td>Secrétariat</td><td>Oui</td></tr>
+            <tr><td>Note de service diffusée</td><td>Direction et Secrétariat</td><td>Non</td></tr>
+            <tr><td>Nouvel événement d'agenda</td><td>Chaque participant interne invité</td><td>Non</td></tr>
+            <tr><td>Nouvelle candidature (lien public)</td><td>Direction</td><td>Non</td></tr>
           </tbody>
         </table>
       </div>
