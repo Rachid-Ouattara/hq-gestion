@@ -6,6 +6,32 @@
  */
 export const MODULES = [
   {
+    code: 'rapports',
+    name: 'Rapports',
+    color: '#6366f1',
+    icon: 'file-text',
+    sort_order: 0,
+    features: [
+      'Rapports de cours',
+      "Rapports d'activité",
+      'Rapports de visite',
+    ],
+  },
+  {
+    // Module synthétique — permission dédiée à l'onglet Paie & Rémunérations
+    // (qui vit dans `rh`, pas un module à part) afin de rendre sa visibilité
+    // configurable rôle par rôle depuis Rôles & droits, indépendamment du
+    // reste de `rh`. `is_navigable: false` : jamais affiché comme tuile ou
+    // lien de navigation propre, seulement comme ligne de permission.
+    code: 'rh_paie',
+    name: 'Paie & Rémunérations',
+    color: null,
+    icon: null,
+    sort_order: 2,
+    is_navigable: false,
+    features: [],
+  },
+  {
     code: 'administrative',
     name: 'Gestion Administrative',
     color: '#2456a6',
@@ -113,7 +139,6 @@ export const MODULES = [
       'Écoles partenaires',
       'Camps de vacances',
       'Formateurs & Planning',
-      'Rapports de cours',
       'Maintenance',
     ],
   },
@@ -127,7 +152,6 @@ export const MODULES = [
       'Campagnes de prospection',
       'Groupes & équipes terrain',
       'Écoles ciblées',
-      'Rapports de visite',
     ],
   },
 ];

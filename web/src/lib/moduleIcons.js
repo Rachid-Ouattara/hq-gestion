@@ -8,6 +8,7 @@ import {
   PieChart,
   GraduationCap,
   Target,
+  FileText,
   LayoutGrid,
 } from 'lucide-react';
 
@@ -21,6 +22,7 @@ const map = {
   'pie-chart': PieChart,
   'graduation-cap': GraduationCap,
   target: Target,
+  'file-text': FileText,
 };
 
 export function moduleIcon(name) {

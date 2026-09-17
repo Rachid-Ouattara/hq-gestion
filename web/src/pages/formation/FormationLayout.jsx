@@ -7,10 +7,7 @@ import { moduleIcon } from '../../lib/moduleIcons.js';
 const STAFF_TABS = [
   { to: '.', label: 'Aperçu', end: true },
   { to: 'ecoles', label: 'Écoles partenaires' },
-  { to: 'camps', label: 'Camps de vacances' },
   { to: 'seances', label: 'Formateurs & Planning' },
-  { to: 'rapports', label: 'Rapports de cours' },
-  { to: 'maintenance', label: 'Maintenance' },
 ];
 
 const FORMATEUR_TABS = [
@@ -49,7 +46,7 @@ export default function FormationLayout() {
             {isFormateur ? 'Mon espace formateur' : 'Formation & Écoles Partenaires'}
           </h1>
           <p className="text-sm text-slate-500">
-            {isFormateur ? 'Votre planning et vos rapports de cours' : 'Écoles, camps, planning, rapports et maintenance'}
+            {isFormateur ? 'Votre planning et vos rapports de cours' : 'Écoles partenaires (camps et maintenance inclus) et planning des formateurs'}
           </p>
         </div>
       </header>

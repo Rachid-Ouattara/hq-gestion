@@ -74,6 +74,10 @@ import DepenseDetail from './pages/finance/DepenseDetail.jsx';
 import Budgets from './pages/finance/Budgets.jsx';
 import BudgetDetail from './pages/finance/BudgetDetail.jsx';
 import Rapports from './pages/finance/Rapports.jsx';
+import ReportingLayout from './pages/reporting/ReportingLayout.jsx';
+import RapportsLayout from './pages/rapports/RapportsLayout.jsx';
+import ReportingApercu from './pages/reporting/Apercu.jsx';
+import JournalAudit from './pages/reporting/JournalAudit.jsx';
 import FormationLayout from './pages/formation/FormationLayout.jsx';
 import FormationApercu from './pages/formation/Apercu.jsx';
 import Ecoles from './pages/formation/Ecoles.jsx';
@@ -201,7 +205,15 @@ export default function App() {
               <Route path="campagnes/:id" element={<CampagneDetail />} />
               <Route path="ecoles-cibles" element={<EcolesCibles />} />
               <Route path="ecoles-cibles/:id" element={<EcoleCibleDetail />} />
-              <Route path="rapports" element={<ProspectionRapports />} />
+            </Route>
+            <Route path="modules/rapports" element={<RapportsLayout />}>
+              <Route path="cours" element={<RapportsCours />} />
+              <Route path="activite" element={<RapportsActivite />} />
+              <Route path="visite" element={<ProspectionRapports />} />
+            </Route>
+            <Route path="modules/reporting" element={<ReportingLayout />}>
+              <Route index element={<ReportingApercu />} />
+              <Route path="journal-audit" element={<JournalAudit />} />
             </Route>
             <Route path="modules/:code" element={<ModulePage />} />
             <Route

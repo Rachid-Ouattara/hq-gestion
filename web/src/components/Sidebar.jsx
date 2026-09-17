@@ -5,13 +5,14 @@ import { get } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 import { moduleIcon } from '../lib/moduleIcons.js';
 import NotificationBell from './NotificationBell.jsx';
+import GlobalSearch from './GlobalSearch.jsx';
 
 export default function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth();
   const [modules, setModules] = useState([]);
 
   useEffect(() => {
-    get('/modules').then(setModules).catch(() => setModules([]));
+    get('/modules').then((rows) => setModules(rows.filter((m) => m.is_navigable !== false))).catch(() => setModules([]));
   }, []);
 
   const linkClass = ({ isActive }) =>
@@ -38,6 +39,7 @@ export default function Sidebar({ open, onClose }) {
         </button>
       </div>
 
+      <GlobalSearch />
       <NotificationBell />
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-2">

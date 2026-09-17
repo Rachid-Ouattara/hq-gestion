@@ -10,7 +10,12 @@ const router = Router();
 
 const SELECT_BASE = `
   SELECT s.*, e.nom AS ecole_nom, sa.nom AS salle_nom, c.nom AS camp_nom, cl.nom AS classe_nom,
-         emp.nom AS formateur_nom, emp.prenom AS formateur_prenom
+         emp.nom AS formateur_nom, emp.prenom AS formateur_prenom,
+         EXISTS (
+           SELECT 1 FROM rh_conges co
+            WHERE co.employe_id = s.formateur_id AND co.statut = 'validee'
+              AND s.date_seance BETWEEN co.date_debut AND co.date_fin
+         ) AS formateur_en_conge
     FROM formation_seances s
     LEFT JOIN formation_ecoles e ON e.id = s.ecole_id
     LEFT JOIN formation_salles sa ON sa.id = s.salle_id

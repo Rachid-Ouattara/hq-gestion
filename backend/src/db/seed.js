@@ -37,6 +37,10 @@ function permissionsFor(roleCode, moduleCode) {
 
   if (roleCode === 'secretaire') {
     if (moduleCode === 'reporting') return readOnly;
+    // Paie & Rémunérations : aucun accès par défaut (donnée sensible), configurable
+    // ensuite rôle par rôle depuis Rôles & droits — ne doit pas hériter du droit
+    // large accordé par défaut au reste des modules pour ce rôle.
+    if (moduleCode === 'rh_paie') return none;
     return { can_read: true, can_create: true, can_update: true, can_delete: true, can_validate: false };
   }
 
@@ -83,8 +87,18 @@ async function seed() {
       );
     }
 
-    // Permissions RBAC
-    const { rows: roleRows } = await client.query('SELECT id, code FROM roles');
+    // Permissions RBAC — uniquement pour les rôles système fournis par défaut
+    // (ROLES ci-dessus). Un rôle personnalisé créé depuis Rôles & droits est
+    // géré exclusivement par cette interface : le seed ne doit jamais réécrire
+    // ses droits (ce qui, avant ce correctif, réinitialisait silencieusement
+    // tout rôle personnalisé à « aucun droit » sur chaque nouveau module à
+    // chaque exécution — voir la ligne `ON CONFLICT ... DO UPDATE` ci-dessous,
+    // qui ne s'applique donc plus qu'aux rôles système). Un module absent de
+    // la table pour un rôle personnalisé retombe correctement sur « aucun
+    // droit » via `requirePermission` (ligne manquante = refusé), donc rien à
+    // insérer non plus pour les nouveaux modules côté rôles personnalisés.
+    const { rows: allRoleRows } = await client.query('SELECT id, code, is_system FROM roles');
+    const roleRows = allRoleRows.filter((r) => r.is_system);
     for (const role of roleRows) {
       for (const moduleCode of MODULE_CODES) {
         const p = permissionsFor(role.code, moduleCode);

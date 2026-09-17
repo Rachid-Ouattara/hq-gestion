@@ -9,6 +9,7 @@ import rolesRoutes from './modules/roles/roles.routes.js';
 import attachmentsRoutes from './modules/attachments/attachments.routes.js';
 import notificationsRoutes from './modules/notifications/notifications.routes.js';
 import reportingRoutes from './modules/reporting/reporting.routes.js';
+import searchRoutes from './modules/search/search.routes.js';
 import businessRoutes, { validationsRouter } from './modules/business/business.routes.js';
 import achatsRoutes from './modules/achats/index.js';
 import stocksRoutes from './modules/stocks/index.js';
@@ -36,6 +37,7 @@ export function createApp() {
   app.use('/api/attachments', attachmentsRoutes);
   app.use('/api/notifications', notificationsRoutes);
   app.use('/api/reporting', reportingRoutes);
+  app.use('/api/search', searchRoutes);
   app.use('/api/modules', businessRoutes);
   app.use('/api/validations', validationsRouter);
   app.use('/api/achats', achatsRoutes);

@@ -180,7 +180,37 @@ router.post(
         `UPDATE rh_conges SET statut = $2, updated_at = now() WHERE id = $1 RETURNING *`,
         [req.params.id, decision === 'validated' ? 'validee' : 'rejetee']
       );
-      return rows[0];
+      const conge_ = rows[0];
+
+      // Un congé validé peut chevaucher des séances déjà planifiées pour ce
+      // formateur — l'école n'a pas de compte applicatif, on prévient donc la
+      // Direction avec tout le contexte pour qu'elle réaffecte/reporte et
+      // recontacte l'école elle-même.
+      if (decision === 'validated') {
+        const { rows: seances } = await client.query(
+          `SELECT s.id, s.numero, s.date_seance, e.nom AS employe_nom, e.prenom AS employe_prenom,
+                  ec.nom AS ecole_nom
+             FROM formation_seances s
+             JOIN rh_employes e ON e.id = s.formateur_id
+             LEFT JOIN formation_ecoles ec ON ec.id = s.ecole_id
+            WHERE s.formateur_id = $1 AND s.statut = 'planifiee'
+              AND s.date_seance BETWEEN $2 AND $3`,
+          [conge_.employe_id, conge_.date_debut, conge_.date_fin]
+        );
+        for (const s of seances) {
+          await notifyRole(client, {
+            roleCode: 'direction',
+            titre: 'Séance à réaffecter — formateur en congé',
+            message: `${s.employe_prenom} ${s.employe_nom} est en congé le ${new Date(s.date_seance).toLocaleDateString('fr-FR')} — la séance ${s.numero}${s.ecole_nom ? ` (${s.ecole_nom})` : ''} doit être réaffectée ou reportée.`,
+            moduleCode: 'formation',
+            entityType: 'seance',
+            entityId: s.id,
+            critique: true,
+          });
+        }
+      }
+
+      return conge_;
     });
 
     await logAudit({

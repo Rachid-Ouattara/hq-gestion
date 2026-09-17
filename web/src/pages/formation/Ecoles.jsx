@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import { get, post } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
@@ -7,11 +7,19 @@ import { useToast } from '../../lib/toast.jsx';
 import DataTable from '../../components/DataTable.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
 import SlideOver from '../../components/SlideOver.jsx';
+import Camps from './Camps.jsx';
+import Maintenance from './Maintenance.jsx';
 import { ECOLE_STATUT } from './statusMaps.js';
 
 const EMPTY_FORM = { nom: '', ville: '', adresse: '', contact_nom: '', contact_telephone: '', contact_email: '' };
 
-export default function Ecoles() {
+const SUB_TABS = [
+  { key: 'liste', label: 'Liste des écoles' },
+  { key: 'camps', label: 'Camps de vacances' },
+  { key: 'maintenance', label: 'Maintenance' },
+];
+
+function ListeEcoles() {
   const { can } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
@@ -89,6 +97,42 @@ export default function Ecoles() {
           <button className="btn-primary w-full" onClick={submit} disabled={!form.nom.trim() || !form.ville.trim()}>Enregistrer</button>
         </div>
       </SlideOver>
+    </div>
+  );
+}
+
+export default function Ecoles() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = SUB_TABS.some((t) => t.key === searchParams.get('tab')) ? searchParams.get('tab') : 'liste';
+
+  const selectTab = (key) => {
+    if (key === 'liste') {
+      searchParams.delete('tab');
+    } else {
+      searchParams.set('tab', key);
+    }
+    setSearchParams(searchParams, { replace: true });
+  };
+
+  return (
+    <div>
+      <div className="mb-5 flex gap-1 rounded-lg border border-slate-200 bg-white p-1" style={{ width: 'fit-content' }}>
+        {SUB_TABS.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => selectTab(t.key)}
+            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              activeTab === t.key ? 'bg-hq-blue text-white' : 'text-slate-500 hover:bg-slate-50'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'liste' && <ListeEcoles />}
+      {activeTab === 'camps' && <Camps />}
+      {activeTab === 'maintenance' && <Maintenance />}
     </div>
   );
 }

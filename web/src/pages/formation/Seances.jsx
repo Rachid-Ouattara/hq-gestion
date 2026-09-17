@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart3, LayoutGrid, List, Plus, Settings2 } from 'lucide-react';
+import { AlertTriangle, BarChart3, LayoutGrid, List, Plus, Settings2 } from 'lucide-react';
 import { get, post, put } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
@@ -128,7 +128,20 @@ export default function Seances() {
     { key: 'heure_debut', label: 'Horaire', render: (s) => `${s.heure_debut.slice(0, 5)} - ${s.heure_fin.slice(0, 5)}` },
     { key: 'lieu', label: 'Lieu', render: (s) => s.ecole_nom ? `${s.ecole_nom} · ${s.salle_nom}${s.classe_nom ? ` · ${s.classe_nom}` : ''}` : s.camp_nom },
     { key: 'domaine', label: 'Domaine', render: (s) => DOMAINE_LABEL[s.domaine] || s.domaine },
-    ...(isStaff ? [{ key: 'formateur_nom', label: 'Formateur', render: (s) => `${s.formateur_nom} ${s.formateur_prenom}` }] : []),
+    ...(isStaff ? [{
+      key: 'formateur_nom',
+      label: 'Formateur',
+      render: (s) => (
+        <span className="inline-flex items-center gap-1.5">
+          {s.formateur_nom} {s.formateur_prenom}
+          {s.formateur_en_conge && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-medium text-red-600" title="Ce formateur est en congé validé sur la date de cette séance">
+              <AlertTriangle size={12} /> En congé
+            </span>
+          )}
+        </span>
+      ),
+    }] : []),
     { key: 'statut', label: 'Statut', render: (s) => <StatusBadge status={s.statut} map={SEANCE_STATUT} /> },
     {
       key: 'actions',

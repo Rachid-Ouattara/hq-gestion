@@ -4,7 +4,8 @@
  * Les deux tables sont tenues à jour ensemble à chaque nouveau type de notification.
  */
 const ROUTE_MAP = {
-  'formation:rapport_cours': () => '/modules/formation/rapports',
+  'formation:rapport_cours': () => '/modules/rapports/cours',
+  'formation:seance': () => '/modules/formation/seances',
   'rh:conge': (id) => `/modules/rh/conges/${id}`,
   'achats:demande_achat': (id) => `/modules/achats/demandes/${id}`,
   'stocks:article': () => '/modules/stocks/alertes',

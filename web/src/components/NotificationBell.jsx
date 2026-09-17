@@ -5,7 +5,8 @@ import { get, patch, post, tokens } from '../lib/api.js';
 import { subscribeToPush } from '../lib/push.js';
 
 const ROUTE_MAP = {
-  'formation:rapport_cours': () => '/modules/formation/rapports',
+  'formation:rapport_cours': () => '/modules/rapports/cours',
+  'formation:seance': () => '/modules/formation/seances',
   'rh:conge': (id) => `/modules/rh/conges/${id}`,
   'achats:demande_achat': (id) => `/modules/achats/demandes/${id}`,
   'stocks:article': () => '/modules/stocks/alertes',

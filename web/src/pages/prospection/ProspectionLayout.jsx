@@ -7,7 +7,6 @@ const TABS = [
   { to: '.', label: 'Aperçu', end: true },
   { to: 'campagnes', label: 'Campagnes' },
   { to: 'ecoles-cibles', label: 'Écoles ciblées' },
-  { to: 'rapports', label: 'Rapports de visite' },
 ];
 
 const tabClass = ({ isActive }) =>
@@ -35,7 +34,7 @@ export default function ProspectionLayout() {
         </span>
         <div>
           <h1 className="text-2xl font-semibold text-hq-blue">Prospection & Écoles Cibles</h1>
-          <p className="text-sm text-slate-500">Campagnes, groupes terrain, écoles ciblées et rapports de visite</p>
+          <p className="text-sm text-slate-500">Campagnes, groupes terrain et écoles ciblées</p>
         </div>
       </header>
 

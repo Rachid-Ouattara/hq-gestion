@@ -9,7 +9,7 @@ const router = Router();
 
 router.get(
   '/',
-  requirePermission('rh', 'read'),
+  requirePermission('rh_paie', 'read'),
   asyncHandler(async (req, res) => {
     const params = [];
     const where = [];
@@ -38,7 +38,7 @@ router.get(
 
 router.get(
   '/:id',
-  requirePermission('rh', 'read'),
+  requirePermission('rh_paie', 'read'),
   asyncHandler(async (req, res) => {
     const { rows } = await query(
       `SELECT p.*, e.nom AS employe_nom, e.prenom AS employe_prenom
@@ -53,7 +53,7 @@ router.get(
 
 router.post(
   '/',
-  requirePermission('rh', 'create'),
+  requirePermission('rh_paie', 'create'),
   asyncHandler(async (req, res) => {
     const parsed = paieSchema.safeParse(req.body);
     if (!parsed.success) throw badRequest('Champs invalides (employé et période AAAA-MM requis)');
@@ -76,7 +76,7 @@ router.post(
 
 router.patch(
   '/:id',
-  requirePermission('rh', 'update'),
+  requirePermission('rh_paie', 'update'),
   asyncHandler(async (req, res) => {
     const parsed = paieSchema.partial().safeParse(req.body);
     if (!parsed.success) throw badRequest('Champs invalides');
@@ -96,7 +96,7 @@ router.patch(
 
 router.post(
   '/:id/payer',
-  requirePermission('rh', 'update'),
+  requirePermission('rh_paie', 'update'),
   asyncHandler(async (req, res) => {
     const { rows } = await query(
       `UPDATE rh_paies SET statut = 'payee', date_paiement = CURRENT_DATE, updated_at = now()

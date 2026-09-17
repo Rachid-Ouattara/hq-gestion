@@ -98,18 +98,19 @@ export default function SeancesCalendar({ rows, isStaff }) {
                       <div
                         key={s.id}
                         className={`rounded-md border p-2 text-xs ${
-                          inConflict ? 'border-red-200 bg-red-50' : 'border-transparent bg-hq-blue-light'
+                          inConflict || s.formateur_en_conge ? 'border-red-200 bg-red-50' : 'border-transparent bg-hq-blue-light'
                         }`}
                       >
                         <div className="flex items-start justify-between gap-1">
                           <p className="font-medium text-slate-700">
                             {s.heure_debut.slice(0, 5)}–{s.heure_fin.slice(0, 5)}
                           </p>
-                          {inConflict && <AlertTriangle size={13} className="mt-0.5 shrink-0 text-red-500" />}
+                          {(inConflict || s.formateur_en_conge) && <AlertTriangle size={13} className="mt-0.5 shrink-0 text-red-500" />}
                         </div>
                         <p className="text-slate-600">{s.ecole_nom ? `${s.ecole_nom} · ${s.salle_nom}` : s.camp_nom}</p>
                         <p className="text-slate-400">{DOMAINE_LABEL[s.domaine] || s.domaine}</p>
                         {isStaff && <p className="text-slate-500">{s.formateur_nom} {s.formateur_prenom}</p>}
+                        {isStaff && s.formateur_en_conge && <p className="font-medium text-red-600">Formateur en congé</p>}
                         <div className="mt-1">
                           <StatusBadge status={s.statut} map={SEANCE_STATUT} />
                         </div>

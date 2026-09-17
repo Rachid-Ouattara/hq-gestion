@@ -46,7 +46,7 @@ export default function Echeancier() {
                 </span>
                 <button
                   className="btn-ghost !py-1.5 text-xs"
-                  onClick={() => navigate(`/modules/formation/maintenance?ecole_id=${r.ecole_id}&salle_id=${r.salle_id}`)}
+                  onClick={() => navigate(`/modules/formation/ecoles?tab=maintenance&ecole_id=${r.ecole_id}&salle_id=${r.salle_id}`)}
                 >
                   <Wrench size={14} /> Planifier une visite
                 </button>

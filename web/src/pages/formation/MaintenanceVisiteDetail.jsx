@@ -73,7 +73,7 @@ export default function MaintenanceVisiteDetail() {
 
   return (
     <div>
-      <button onClick={() => navigate('/modules/formation/maintenance')} className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-hq-blue">
+      <button onClick={() => navigate('/modules/formation/ecoles?tab=maintenance')} className="mb-4 flex items-center gap-1 text-sm text-slate-500 hover:text-hq-blue">
         <ArrowLeft size={16} /> Retour aux visites
       </button>
 

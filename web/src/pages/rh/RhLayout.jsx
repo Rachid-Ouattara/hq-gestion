@@ -8,10 +8,9 @@ const STAFF_TABS = [
   { to: '.', label: 'Aperçu', end: true },
   { to: 'employes', label: 'Dossier du personnel' },
   { to: 'conges', label: 'Congés & absences' },
-  { to: 'paies', label: 'Paie & Rémunérations' },
+  { to: 'paies', label: 'Paie & Rémunérations', requires: 'rh_paie' },
   { to: 'evaluations', label: 'Évaluations' },
   { to: 'formations', label: 'Formation' },
-  { to: 'rapports-activite', label: "Rapports d'activité" },
   { to: 'recrutement', label: 'Recrutement' },
   { to: 'presences', label: 'Présences' },
 ];
@@ -29,7 +28,7 @@ const tabClass = ({ isActive }) =>
   }`;
 
 export default function RhLayout() {
-  const { user } = useAuth();
+  const { user, can } = useAuth();
   const location = useLocation();
   const [module, setModule] = useState(null);
 
@@ -39,7 +38,7 @@ export default function RhLayout() {
 
   const Icon = moduleIcon(module?.icon);
   const isSelfService = ['formateur', 'employe'].includes(user?.role);
-  const tabs = isSelfService ? SELF_TABS : STAFF_TABS;
+  const tabs = (isSelfService ? SELF_TABS : STAFF_TABS).filter((t) => !t.requires || can(t.requires, 'read'));
 
   return (
     <div>

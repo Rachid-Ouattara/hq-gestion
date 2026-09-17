@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [modules, setModules] = useState([]);
 
   useEffect(() => {
-    get('/modules').then(setModules).catch(() => {});
+    get('/modules').then((rows) => setModules(rows.filter((m) => m.is_navigable !== false))).catch(() => {});
     if (can('reporting', 'read')) {
       get('/reporting/kpi').then(setKpi).catch(() => {});
     }
