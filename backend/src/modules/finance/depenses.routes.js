@@ -72,10 +72,10 @@ router.post(
         if (!budgetRows[0]) throw badRequest('Budget introuvable');
       }
       const { rows } = await client.query(
-        `INSERT INTO finance_depenses (compte_id, budget_id, date_depense, categorie, libelle, montant, reference, created_by)
-         VALUES ($1,$2,COALESCE($3, CURRENT_DATE),$4,$5,$6,$7,$8)
+        `INSERT INTO finance_depenses (compte_id, budget_id, date_depense, categorie, libelle, montant, reference, activite, created_by)
+         VALUES ($1,$2,COALESCE($3, CURRENT_DATE),$4,$5,$6,$7,$8,$9)
          RETURNING *`,
-        [d.compte_id, d.budget_id || null, d.date_depense || null, d.categorie, d.libelle, d.montant, d.reference || null, req.user.id]
+        [d.compte_id, d.budget_id || null, d.date_depense || null, d.categorie, d.libelle, d.montant, d.reference || null, d.activite || null, req.user.id]
       );
       await adjustCompteSolde(client, { compteId: d.compte_id, delta: -d.montant });
       return rows[0];

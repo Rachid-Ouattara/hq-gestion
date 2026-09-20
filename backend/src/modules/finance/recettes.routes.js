@@ -62,10 +62,10 @@ router.post(
 
     const recette = await withTransaction(async (client) => {
       const { rows } = await client.query(
-        `INSERT INTO finance_recettes (compte_id, date_recette, source, montant, reference, created_by)
-         VALUES ($1,COALESCE($2, CURRENT_DATE),$3,$4,$5,$6)
+        `INSERT INTO finance_recettes (compte_id, date_recette, source, montant, reference, activite, created_by)
+         VALUES ($1,COALESCE($2, CURRENT_DATE),$3,$4,$5,$6,$7)
          RETURNING *`,
-        [r.compte_id, r.date_recette || null, r.source, r.montant, r.reference || null, req.user.id]
+        [r.compte_id, r.date_recette || null, r.source, r.montant, r.reference || null, r.activite, req.user.id]
       );
       await adjustCompteSolde(client, { compteId: r.compte_id, delta: r.montant });
       return rows[0];

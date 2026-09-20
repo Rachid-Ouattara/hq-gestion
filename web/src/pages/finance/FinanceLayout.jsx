@@ -5,11 +5,14 @@ import { moduleIcon } from '../../lib/moduleIcons.js';
 
 const TABS = [
   { to: '.', label: 'Aperçu', end: true },
-  { to: 'comptabilite', label: 'Comptabilité générale' },
-  { to: 'recettes', label: 'Recettes' },
+  { to: 'tresorerie', label: 'Trésorerie' },
+  { to: 'recettes', label: 'Recettes & Prévisions' },
   { to: 'depenses', label: 'Dépenses' },
   { to: 'budgets', label: 'Budgets' },
-  { to: 'rapports', label: 'États financiers & Rapports' },
+  { to: 'tiers', label: 'Créances & Dettes' },
+  { to: 'engagements', label: 'Engagements' },
+  { to: 'comptabilite', label: 'Comptabilité générale' },
+  { to: 'rapports', label: 'Rapports & Résultat' },
 ];
 
 const tabClass = ({ isActive }) =>

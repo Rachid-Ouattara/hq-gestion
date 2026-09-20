@@ -74,6 +74,9 @@ import DepenseDetail from './pages/finance/DepenseDetail.jsx';
 import Budgets from './pages/finance/Budgets.jsx';
 import BudgetDetail from './pages/finance/BudgetDetail.jsx';
 import Rapports from './pages/finance/Rapports.jsx';
+import Tresorerie from './pages/finance/Tresorerie.jsx';
+import Tiers from './pages/finance/Tiers.jsx';
+import Engagements from './pages/finance/Engagements.jsx';
 import ReportingLayout from './pages/reporting/ReportingLayout.jsx';
 import RapportsLayout from './pages/rapports/RapportsLayout.jsx';
 import ReportingApercu from './pages/reporting/Apercu.jsx';
@@ -185,6 +188,9 @@ export default function App() {
               <Route path="depenses/:id" element={<DepenseDetail />} />
               <Route path="budgets" element={<Budgets />} />
               <Route path="budgets/:id" element={<BudgetDetail />} />
+              <Route path="tresorerie" element={<Tresorerie />} />
+              <Route path="tiers" element={<Tiers />} />
+              <Route path="engagements" element={<Engagements />} />
               <Route path="rapports" element={<Rapports />} />
             </Route>
             <Route path="modules/formation" element={<FormationLayout />}>

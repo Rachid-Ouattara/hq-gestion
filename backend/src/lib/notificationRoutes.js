@@ -19,6 +19,8 @@ const ROUTE_MAP = {
   'administrative:archive': (id) => `/modules/administrative/archives/${id}`,
   'administrative:note': (id) => `/modules/administrative/notes/${id}`,
   'administrative:agenda': () => '/modules/administrative/agenda',
+  'finance:facture': (id) => `/modules/commercial/factures/${id}`,
+  'finance:bon_commande': (id) => `/modules/achats/bons/${id}`,
 };
 
 export function resolveNotificationUrl({ moduleCode, entityType, entityId }) {

@@ -6,9 +6,9 @@ import { useToast } from '../../lib/toast.jsx';
 import DataTable from '../../components/DataTable.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
 import SlideOver from '../../components/SlideOver.jsx';
-import { COMPTE_TYPE_LABEL } from './statusMaps.js';
+import { COMPTE_TYPE_LABEL, TYPE_TRESORERIE_LABEL } from './statusMaps.js';
 
-const EMPTY_FORM = { code: '', libelle: '', type: 'actif' };
+const EMPTY_FORM = { code: '', libelle: '', type: 'actif', type_tresorerie: '' };
 const ACTIVE_MAP = {
   true: { label: 'Actif', className: 'bg-emerald-50 text-emerald-700' },
   false: { label: 'Inactif', className: 'bg-slate-100 text-slate-500' },
@@ -54,6 +54,7 @@ export default function Comptes() {
     { key: 'code', label: 'Code' },
     { key: 'libelle', label: 'Libellé' },
     { key: 'type', label: 'Type', render: (c) => COMPTE_TYPE_LABEL[c.type] || c.type },
+    { key: 'type_tresorerie', label: 'Trésorerie', render: (c) => (c.type_tresorerie ? TYPE_TRESORERIE_LABEL[c.type_tresorerie] : '—') },
     {
       key: 'solde',
       label: 'Solde',
@@ -104,6 +105,15 @@ export default function Comptes() {
             <label className="label">Type</label>
             <select className="input" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
               {Object.entries(COMPTE_TYPE_LABEL).map(([code, label]) => (
+                <option key={code} value={code}>{label}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="label">Moyen de trésorerie (optionnel)</label>
+            <select className="input" value={form.type_tresorerie} onChange={(e) => setForm({ ...form, type_tresorerie: e.target.value })}>
+              <option value="">— Aucun (compte non-trésorerie) —</option>
+              {Object.entries(TYPE_TRESORERIE_LABEL).map(([code, label]) => (
                 <option key={code} value={code}>{label}</option>
               ))}
             </select>

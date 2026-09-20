@@ -6,9 +6,9 @@ import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
 import DataTable from '../../components/DataTable.jsx';
 import SlideOver from '../../components/SlideOver.jsx';
-import { DEPENSE_CATEGORIE_LABEL } from './statusMaps.js';
+import { ACTIVITE_LABEL, DEPENSE_CATEGORIE_LABEL } from './statusMaps.js';
 
-const EMPTY_FORM = { compte_id: '', budget_id: '', categorie: 'fournitures', libelle: '', montant: '0', reference: '' };
+const EMPTY_FORM = { compte_id: '', budget_id: '', categorie: 'fonctionnement', activite: '', libelle: '', montant: '0', reference: '' };
 
 export default function Depenses() {
   const { can } = useAuth();
@@ -46,6 +46,7 @@ export default function Depenses() {
     { key: 'numero', label: 'N°' },
     { key: 'compte_libelle', label: 'Compte', render: (r) => `${r.compte_code} — ${r.compte_libelle}` },
     { key: 'categorie', label: 'Catégorie', render: (r) => DEPENSE_CATEGORIE_LABEL[r.categorie] || r.categorie },
+    { key: 'activite', label: 'Activité (directe)', render: (r) => (r.activite ? ACTIVITE_LABEL[r.activite] : '—') },
     { key: 'libelle', label: 'Libellé' },
     { key: 'date_depense', label: 'Date', render: (r) => new Date(r.date_depense).toLocaleDateString('fr-FR') },
     { key: 'montant', label: 'Montant', render: (r) => Number(r.montant).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) },
@@ -86,6 +87,15 @@ export default function Depenses() {
           <div>
             <label className="label">Libellé</label>
             <input className="input" value={form.libelle} onChange={(e) => setForm({ ...form, libelle: e.target.value })} />
+          </div>
+          <div>
+            <label className="label">Activité (si charge directe — optionnel)</label>
+            <select className="input" value={form.activite} onChange={(e) => setForm({ ...form, activite: e.target.value })}>
+              <option value="">— Frais général non affecté —</option>
+              {Object.entries(ACTIVITE_LABEL).map(([code, label]) => (
+                <option key={code} value={code}>{label}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="label">Budget lié (optionnel)</label>
