@@ -155,9 +155,12 @@ cd /var/www/hq-gestion
 git pull
 npm ci
 npm run migrate
+npm run seed
 npm run build --workspace web
 pm2 reload hq-gestion-api
 ```
+
+`npm run seed` est sans danger à relancer (voir section 2) : certains chantiers ajoutent de nouveaux modules/permissions (ex. `rh_paie`, `rapports`) qui ne sont provisionnés que par le seed, jamais par une migration seule — l'oublier laisse ces modules sans aucune ligne de permission pour aucun rôle, y compris admin.
 
 ## À sauvegarder régulièrement
 

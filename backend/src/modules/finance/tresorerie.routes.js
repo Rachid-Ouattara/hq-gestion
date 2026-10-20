@@ -41,11 +41,17 @@ router.get(
     const { rows } = await query(
       `SELECT r.id, r.date_recette AS date_mouvement, 'encaissement' AS type, r.montant, r.source AS libelle, r.compte_id
          FROM finance_recettes r JOIN finance_comptes c ON c.id = r.compte_id
-        WHERE c.type_tresorerie IS NOT NULL AND r.date_recette BETWEEN $1 AND $2
+        WHERE c.is_active = true AND c.type_tresorerie IS NOT NULL AND r.date_recette BETWEEN $1 AND $2
        UNION ALL
        SELECT d.id, d.date_depense AS date_mouvement, 'decaissement' AS type, d.montant, d.libelle, d.compte_id
          FROM finance_depenses d JOIN finance_comptes c ON c.id = d.compte_id
-        WHERE c.type_tresorerie IS NOT NULL AND d.date_depense BETWEEN $1 AND $2
+        WHERE c.is_active = true AND c.type_tresorerie IS NOT NULL AND d.date_depense BETWEEN $1 AND $2
+       UNION ALL
+       SELECT e.id, e.date_encaissement AS date_mouvement, 'encaissement' AS type, e.montant, 'Encaissement facture ' || f.numero AS libelle, e.compte_id
+         FROM commercial_encaissements e
+         JOIN finance_comptes c ON c.id = e.compte_id
+         JOIN commercial_factures f ON f.id = e.facture_id
+        WHERE c.is_active = true AND c.type_tresorerie IS NOT NULL AND e.date_encaissement BETWEEN $1 AND $2
         ORDER BY date_mouvement ASC`,
       [from, to]
     );

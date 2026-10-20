@@ -56,11 +56,13 @@ router.get(
     const totalDepenses = Number(depensesTotal[0].total);
     const totalPrevu = Number(previsionAnnee[0].total);
 
+    const produitsByActivite = Object.fromEntries(produitsParActivite.map((p) => [p.activite, Number(p.total)]));
     const chargesDirectesByActivite = Object.fromEntries(chargesDirectesParActivite.map((c) => [c.activite, Number(c.total)]));
-    const analyseParActivite = produitsParActivite.map((p) => {
-      const ca = Number(p.total);
-      const chargesDirectes = chargesDirectesByActivite[p.activite] || 0;
-      return { activite: p.activite, ca, charges_directes: chargesDirectes, marge: ca - chargesDirectes };
+    const activitesPresentes = new Set([...Object.keys(produitsByActivite), ...Object.keys(chargesDirectesByActivite)]);
+    const analyseParActivite = [...activitesPresentes].map((activite) => {
+      const ca = produitsByActivite[activite] || 0;
+      const chargesDirectes = chargesDirectesByActivite[activite] || 0;
+      return { activite, ca, charges_directes: chargesDirectes, marge: ca - chargesDirectes };
     });
 
     res.json({

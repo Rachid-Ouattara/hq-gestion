@@ -33,7 +33,8 @@ export default function Tresorerie() {
 
   useEffect(() => {
     get(`/finance/tresorerie/previsionnel?jours=${jours}`).then(setPrevisionnel).catch((e) => toast.error(e.message));
-  }, [jours, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jours]);
 
   const soldeSeries = useMemo(() => {
     if (!tresorerie || !mouvements) return null;

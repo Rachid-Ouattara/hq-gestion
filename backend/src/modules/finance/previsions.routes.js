@@ -51,11 +51,12 @@ router.post(
       `INSERT INTO finance_previsions_recettes (exercice, mois, activite, montant_prevu, created_by)
        VALUES ($1,$2,$3,$4,$5)
        ON CONFLICT (exercice, mois, activite) DO UPDATE SET montant_prevu = EXCLUDED.montant_prevu, updated_at = now()
-       RETURNING *`,
+       RETURNING *, (xmax = 0) AS inserted`,
       [p.exercice, p.mois, p.activite, p.montant_prevu, req.user.id]
     );
-    await logAudit({ userId: req.user.id, action: 'create', moduleCode: 'finance', entityType: 'prevision_recette', entityId: rows[0].id, ip: req.ip });
-    res.status(201).json(rows[0]);
+    const { inserted, ...prevision } = rows[0];
+    await logAudit({ userId: req.user.id, action: inserted ? 'create' : 'update', moduleCode: 'finance', entityType: 'prevision_recette', entityId: prevision.id, ip: req.ip });
+    res.status(inserted ? 201 : 200).json(prevision);
   })
 );
 

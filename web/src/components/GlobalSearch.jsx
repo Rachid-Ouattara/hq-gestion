@@ -41,13 +41,14 @@ export default function GlobalSearch() {
       return;
     }
     setLoading(true);
+    let stale = false;
     const timeout = setTimeout(() => {
       get(`/search?q=${encodeURIComponent(term)}`)
-        .then(setGroups)
-        .catch(() => setGroups([]))
-        .finally(() => setLoading(false));
+        .then((res) => { if (!stale) setGroups(res); })
+        .catch(() => { if (!stale) setGroups([]); })
+        .finally(() => { if (!stale) setLoading(false); });
     }, 250);
-    return () => clearTimeout(timeout);
+    return () => { stale = true; clearTimeout(timeout); };
   }, [q]);
 
   const goTo = (url) => {

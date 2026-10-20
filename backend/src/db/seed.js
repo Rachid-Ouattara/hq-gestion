@@ -87,29 +87,33 @@ async function seed() {
       );
     }
 
-    // Permissions RBAC — uniquement pour les rôles système fournis par défaut
-    // (ROLES ci-dessus). Un rôle personnalisé créé depuis Rôles & droits est
-    // géré exclusivement par cette interface : le seed ne doit jamais réécrire
-    // ses droits (ce qui, avant ce correctif, réinitialisait silencieusement
-    // tout rôle personnalisé à « aucun droit » sur chaque nouveau module à
-    // chaque exécution — voir la ligne `ON CONFLICT ... DO UPDATE` ci-dessous,
-    // qui ne s'applique donc plus qu'aux rôles système). Un module absent de
-    // la table pour un rôle personnalisé retombe correctement sur « aucun
-    // droit » via `requirePermission` (ligne manquante = refusé), donc rien à
-    // insérer non plus pour les nouveaux modules côté rôles personnalisés.
+    // Permissions RBAC. Seul le rôle admin est forcé à chaque exécution (ses
+    // droits ne sont de toute façon jamais éditables depuis Rôles & droits —
+    // voir roles.routes.js). Tous les autres rôles — y compris les rôles
+    // système non-admin (secrétaire, direction, formateur, employé), qui
+    // RESTENT éditables depuis Rôles & droits — ne reçoivent une ligne que si
+    // elle n'existe pas encore (ON CONFLICT DO NOTHING) : ça fournit un
+    // défaut sensé pour un module tout juste ajouté au registre, sans jamais
+    // écraser une personnalisation faite depuis l'interface. Avant ce
+    // correctif, un reseed réinitialisait silencieusement à « aucun droit »
+    // soit tout rôle personnalisé (bug initial), soit toute personnalisation
+    // d'un rôle système non-admin (régression du premier correctif).
     const { rows: allRoleRows } = await client.query('SELECT id, code, is_system FROM roles');
     const roleRows = allRoleRows.filter((r) => r.is_system);
-    for (const role of roleRows) {
+    for (const role of allRoleRows) {
       for (const moduleCode of MODULE_CODES) {
         const p = permissionsFor(role.code, moduleCode);
+        const conflictClause = role.code === 'admin'
+          ? `DO UPDATE SET
+               can_read = EXCLUDED.can_read, can_create = EXCLUDED.can_create,
+               can_update = EXCLUDED.can_update, can_delete = EXCLUDED.can_delete,
+               can_validate = EXCLUDED.can_validate`
+          : 'DO NOTHING';
         await client.query(
           `INSERT INTO role_module_permissions
              (role_id, module_code, can_read, can_create, can_update, can_delete, can_validate)
            VALUES ($1,$2,$3,$4,$5,$6,$7)
-           ON CONFLICT (role_id, module_code) DO UPDATE SET
-             can_read = EXCLUDED.can_read, can_create = EXCLUDED.can_create,
-             can_update = EXCLUDED.can_update, can_delete = EXCLUDED.can_delete,
-             can_validate = EXCLUDED.can_validate`,
+           ON CONFLICT (role_id, module_code) ${conflictClause}`,
           [role.id, moduleCode, p.can_read, p.can_create, p.can_update, p.can_delete, p.can_validate]
         );
       }

@@ -46,7 +46,10 @@ export default function Maintenance() {
     if (ecoleId) {
       onSelectEcole(ecoleId, searchParams.get('salle_id') || '');
       setOpen(true);
-      setSearchParams({}, { replace: true });
+      const next = new URLSearchParams(searchParams);
+      next.delete('ecole_id');
+      next.delete('salle_id');
+      setSearchParams(next, { replace: true });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -57,7 +60,7 @@ export default function Maintenance() {
       setForm(EMPTY_FORM);
       setSalles([]);
       setOpen(false);
-      navigate(created.id);
+      navigate(`/modules/formation/maintenance/${created.id}`);
     } catch (e) {
       toast.error(e.message);
     }
@@ -83,7 +86,7 @@ export default function Maintenance() {
         )}
       </div>
 
-      <DataTable columns={columns} rows={rows} loading={loading} onRowClick={(r) => navigate(`${r.id}`)} emptyLabel="Aucune visite de maintenance." />
+      <DataTable columns={columns} rows={rows} loading={loading} onRowClick={(r) => navigate(`/modules/formation/maintenance/${r.id}`)} emptyLabel="Aucune visite de maintenance." />
 
       <SlideOver open={open} onClose={() => setOpen(false)} title="Nouvelle visite de maintenance">
         <div className="space-y-3">

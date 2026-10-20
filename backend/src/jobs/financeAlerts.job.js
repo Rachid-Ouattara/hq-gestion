@@ -12,7 +12,7 @@ async function alertCreancesEnRetard(client) {
        JOIN commercial_clients c ON c.id = f.client_id
        LEFT JOIN (SELECT facture_id, SUM(montant) AS total_encaisse FROM commercial_encaissements GROUP BY facture_id) enc
          ON enc.facture_id = f.id
-      WHERE f.statut != 'annulee' AND f.echeance = CURRENT_DATE - 1
+      WHERE f.statut != 'annulee' AND f.echeance < CURRENT_DATE
         AND f.montant_total - COALESCE(enc.total_encaisse, 0) > 0`
   );
   for (const f of rows) {
@@ -60,7 +60,7 @@ async function alertDettesEnRetard(client) {
        JOIN fournisseurs f ON f.id = b.fournisseur_id
        LEFT JOIN (SELECT bon_id, SUM(montant) AS total_paye FROM paiements GROUP BY bon_id) pai
          ON pai.bon_id = b.id
-      WHERE b.statut != 'annule' AND b.echeance = CURRENT_DATE - 1
+      WHERE b.statut != 'annule' AND b.echeance < CURRENT_DATE
         AND b.montant_total - COALESCE(pai.total_paye, 0) > 0`
   );
   for (const b of rows) {
@@ -99,11 +99,23 @@ async function alertDettesEcheanceProche(client) {
   }
 }
 
+const CHECKS = [
+  ['alertCreancesEnRetard', alertCreancesEnRetard],
+  ['alertCreancesEcheanceProche', alertCreancesEcheanceProche],
+  ['alertDettesEnRetard', alertDettesEnRetard],
+  ['alertDettesEcheanceProche', alertDettesEcheanceProche],
+];
+
 async function runDailyChecks() {
-  await withTransaction(alertCreancesEnRetard);
-  await withTransaction(alertCreancesEcheanceProche);
-  await withTransaction(alertDettesEnRetard);
-  await withTransaction(alertDettesEcheanceProche);
+  for (const [name, check] of CHECKS) {
+    try {
+      await withTransaction(check);
+    } catch (err) {
+      // Une vérification en échec ne doit pas empêcher les suivantes de tourner.
+      // eslint-disable-next-line no-console
+      console.error(`[jobs] échec alerte financière « ${name} »`, err.message);
+    }
+  }
 }
 
 export function registerFinanceAlertsJob() {

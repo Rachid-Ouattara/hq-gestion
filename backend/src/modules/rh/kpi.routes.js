@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { asyncHandler } from '../../lib/http.js';
-import { requirePermission, requireStaff } from '../../middleware/rbac.js';
+import { requirePermission, requireStaff, loadPermissions } from '../../middleware/rbac.js';
 import { query } from '../../db/pool.js';
 
 const router = Router();
@@ -9,12 +9,15 @@ router.use(requireStaff);
 router.get(
   '/',
   requirePermission('rh', 'read'),
-  asyncHandler(async (_req, res) => {
+  asyncHandler(async (req, res) => {
+    const perms = await loadPermissions(req.user.role_id);
+    const canReadPaies = !!perms.rh_paie?.read;
+
     const [{ rows: employes }, { rows: conges }, { rows: evaluations }, { rows: paies }, { rows: contrats }, { rows: candidats }] = await Promise.all([
       query("SELECT count(*)::int AS n FROM rh_employes WHERE statut = 'actif'"),
       query("SELECT count(*)::int AS n FROM rh_conges WHERE statut = 'soumise'"),
       query("SELECT count(*)::int AS n FROM rh_evaluations WHERE statut = 'brouillon'"),
-      query("SELECT count(*)::int AS n FROM rh_paies WHERE statut = 'brouillon'"),
+      canReadPaies ? query("SELECT count(*)::int AS n FROM rh_paies WHERE statut = 'brouillon'") : Promise.resolve({ rows: [{ n: null }] }),
       query("SELECT count(*)::int AS n FROM rh_contrats WHERE statut='actif' AND date_fin IS NOT NULL AND date_fin <= CURRENT_DATE + INTERVAL '30 days'"),
       query("SELECT count(*)::int AS n FROM rh_candidats WHERE statut NOT IN ('embauche','refuse')"),
     ]);
@@ -22,7 +25,7 @@ router.get(
       employes_actifs: employes[0].n,
       conges_en_attente: conges[0].n,
       evaluations_brouillon: evaluations[0].n,
-      paies_a_traiter: paies[0].n,
+      ...(canReadPaies ? { paies_a_traiter: paies[0].n } : {}),
       contrats_a_renouveler: contrats[0].n,
       candidats_en_cours: candidats[0].n,
     });
