@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import ModulePage from './pages/ModulePage.jsx';
 import Users from './pages/Users.jsx';
 import Roles from './pages/Roles.jsx';
+import Parametres from './pages/Parametres.jsx';
 import AchatsLayout from './pages/achats/AchatsLayout.jsx';
 import AchatsApercu from './pages/achats/Apercu.jsx';
 import DemandesAchat from './pages/achats/DemandesAchat.jsx';
@@ -235,6 +236,14 @@ export default function App() {
               element={
                 <ProtectedRoute adminOnly>
                   <Roles />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="admin/parametres"
+              element={
+                <ProtectedRoute adminOnly>
+                  <Parametres />
                 </ProtectedRoute>
               }
             />

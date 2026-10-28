@@ -61,16 +61,18 @@ router.get(
 
 // Prévisionnel de trésorerie : solde actuel des comptes de trésorerie +
 // créances à échoir (factures non soldées, échéance <= aujourd'hui+N) -
-// dettes à échoir (bons de commande non soldés, échéance <= aujourd'hui+N).
-// Limite assumée : pas de modélisation des charges récurrentes, seulement
-// les échéances déjà connues des tiers.
+// dettes à échoir (bons de commande non soldés, échéance <= aujourd'hui+N)
+// - charges récurrentes à échoir (loyer, salaires…). Une charge récurrente
+// dont la périodicité est plus courte que la fenêtre compte pour chacune de
+// ses occurrences (ex. une charge mensuelle sur 90 jours compte 3 fois),
+// via generate_series en LATERAL à partir de son ancre `prochaine_echeance`.
 router.get(
   '/previsionnel',
   requirePermission('finance', 'read'),
   asyncHandler(async (req, res) => {
     const jours = [30, 60, 90].includes(Number(req.query.jours)) ? Number(req.query.jours) : 30;
 
-    const [{ rows: soldeRows }, { rows: creanceRows }, { rows: detteRows }] = await Promise.all([
+    const [{ rows: soldeRows }, { rows: creanceRows }, { rows: detteRows }, { rows: chargeRows }] = await Promise.all([
       query(`SELECT COALESCE(SUM(solde), 0) AS n FROM finance_comptes WHERE is_active = true AND type_tresorerie IS NOT NULL`),
       query(
         `SELECT COALESCE(SUM(f.montant_total - COALESCE(enc.total_encaisse, 0)), 0) AS n
@@ -90,18 +92,32 @@ router.get(
             AND b.montant_total - COALESCE(pai.total_paye, 0) > 0`,
         [jours]
       ),
+      query(
+        `SELECT COALESCE(SUM(c.montant), 0) AS n
+           FROM finance_charges_recurrentes c
+           CROSS JOIN LATERAL generate_series(
+             c.prochaine_echeance, CURRENT_DATE + $1::int,
+             CASE c.periodicite WHEN 'mensuelle' THEN INTERVAL '1 month'
+                                WHEN 'trimestrielle' THEN INTERVAL '3 months'
+                                ELSE INTERVAL '1 year' END
+           ) AS occurrence
+          WHERE c.actif = true AND c.prochaine_echeance <= CURRENT_DATE + $1::int`,
+        [jours]
+      ),
     ]);
 
     const soldeActuel = Number(soldeRows[0].n);
     const creancesAEchoir = Number(creanceRows[0].n);
     const dettesAEchoir = Number(detteRows[0].n);
+    const chargesRecurrentesAEchoir = Number(chargeRows[0].n);
 
     res.json({
       jours,
       solde_actuel: soldeActuel,
       creances_a_echoir: creancesAEchoir,
       dettes_a_echoir: dettesAEchoir,
-      solde_previsionnel: soldeActuel + creancesAEchoir - dettesAEchoir,
+      charges_recurrentes_a_echoir: chargesRecurrentesAEchoir,
+      solde_previsionnel: soldeActuel + creancesAEchoir - dettesAEchoir - chargesRecurrentesAEchoir,
     });
   })
 );

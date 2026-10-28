@@ -56,6 +56,25 @@ export async function api(path, options = {}) {
   return data;
 }
 
+/** Télécharge une réponse binaire (PDF, Excel…) et déclenche le téléchargement
+ * navigateur — même refresh transparent sur 401 que `api()`. Nécessaire car le
+ * JWT vit en localStorage : un `<a href>` simple ne porterait pas l'en-tête. */
+export async function downloadFile(path, filename) {
+  let res = await rawFetch(path);
+  if (res.status === 401 && tokens.refresh) {
+    const ok = await tryRefresh();
+    res = ok ? await rawFetch(path) : res;
+  }
+  if (!res.ok) throw new Error('Téléchargement impossible');
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export const get = (path) => api(path);
 export const post = (path, body) => api(path, { method: 'POST', body: JSON.stringify(body) });
 export const patch = (path, body) => api(path, { method: 'PATCH', body: JSON.stringify(body) });

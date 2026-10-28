@@ -11,6 +11,7 @@ import tresorerieRouter from './tresorerie.routes.js';
 import creancesRouter from './creances.routes.js';
 import dettesRouter from './dettes.routes.js';
 import engagementsRouter from './engagements.routes.js';
+import chargesRecurrentesRouter from './chargesRecurrentes.routes.js';
 
 const router = Router();
 router.use(authenticate);
@@ -26,5 +27,6 @@ router.use('/tresorerie', tresorerieRouter);
 router.use('/creances', creancesRouter);
 router.use('/dettes', dettesRouter);
 router.use('/engagements', engagementsRouter);
+router.use('/charges-recurrentes', chargesRecurrentesRouter);
 
 export default router;

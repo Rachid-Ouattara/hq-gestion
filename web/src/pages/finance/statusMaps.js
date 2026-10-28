@@ -44,3 +44,9 @@ export const ENGAGEMENT_STATUT_LABEL = {
   en_cours: { label: 'En cours', className: 'bg-hq-blue-light text-hq-blue' },
   solde: { label: 'Soldé', className: 'bg-emerald-50 text-emerald-700' },
 };
+
+export const PERIODICITE_LABEL = {
+  mensuelle: 'Mensuelle',
+  trimestrielle: 'Trimestrielle',
+  annuelle: 'Annuelle',
+};

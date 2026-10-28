@@ -1,8 +1,8 @@
 import DetailSkeleton from '../../components/DetailSkeleton.jsx';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Ban, PackageCheck, Send, Wallet } from 'lucide-react';
-import { get, post } from '../../lib/api.js';
+import { ArrowLeft, Ban, FileDown, PackageCheck, Send, Wallet } from 'lucide-react';
+import { get, post, downloadFile } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
@@ -47,6 +47,14 @@ export default function BonDetail() {
     }
   };
 
+  const telechargerPdf = async () => {
+    try {
+      await downloadFile(`/achats/bons-de-commande/${id}/pdf`, `${bon.numero}.pdf`);
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
   if (!bon) return error ? <p className="text-slate-500">{error}</p> : <DetailSkeleton />;
 
   return (
@@ -64,6 +72,7 @@ export default function BonDetail() {
           <p className="text-sm text-slate-500">{bon.fournisseur_nom}{bon.demande_numero ? ` · issu de ${bon.demande_numero}` : ''}</p>
         </div>
         <div className="flex gap-2">
+          <button className="btn-ghost" onClick={telechargerPdf}><FileDown size={16} /> Télécharger PDF</button>
           {bon.statut === 'brouillon' && canUpdate && (
             <button className="btn-primary" onClick={envoyer}><Send size={16} /> Envoyer</button>
           )}

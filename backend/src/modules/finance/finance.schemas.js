@@ -55,3 +55,10 @@ export const engagementSchema = z.object({
   responsable_id: z.string().uuid().optional().nullable(),
   notes: optionalText,
 });
+
+export const chargeRecurrenteSchema = z.object({
+  libelle: z.string().trim().min(2),
+  montant: z.coerce.number().positive(),
+  periodicite: z.enum(['mensuelle', 'trimestrielle', 'annuelle']),
+  prochaine_echeance: z.string(),
+});

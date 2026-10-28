@@ -4,6 +4,7 @@ import { requirePermission } from '../../middleware/rbac.js';
 import { logAudit } from '../../middleware/audit.js';
 import { query, withTransaction } from '../../db/pool.js';
 import { bonSchema } from './achats.schemas.js';
+import { newDocument, drawLetterhead, drawDestinataire, drawLignesTable, drawTotal } from '../../lib/pdf/documentPdf.js';
 
 const router = Router();
 
@@ -76,6 +77,45 @@ router.get(
       total_paye: totalPaye,
       solde: Number(rows[0].montant_total) - totalPaye,
     });
+  })
+);
+
+router.get(
+  '/:id/pdf',
+  requirePermission('achats', 'read'),
+  asyncHandler(async (req, res) => {
+    const { rows } = await query(
+      `SELECT b.*, f.nom, f.contact_nom, f.adresse, f.telephone, f.email, f.numero_fiscal
+         FROM bons_de_commande b
+         JOIN fournisseurs f ON f.id = b.fournisseur_id
+        WHERE b.id = $1`,
+      [req.params.id]
+    );
+    if (!rows[0]) throw notFound('Bon de commande introuvable');
+    const bon = rows[0];
+    const { rows: lignes } = await query(
+      'SELECT * FROM bons_de_commande_lignes WHERE bon_id = $1 ORDER BY created_at ASC',
+      [req.params.id]
+    );
+    const { rows: entrepriseRows } = await query('SELECT * FROM parametres_entreprise WHERE id = 1');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${bon.numero}.pdf"`);
+    const doc = newDocument();
+    doc.pipe(res);
+    drawLetterhead(doc, entrepriseRows[0], {
+      titre: 'BON DE COMMANDE',
+      numero: bon.numero,
+      date: new Date(bon.date_commande).toLocaleDateString('fr-FR'),
+    });
+    drawDestinataire(doc, { label: 'Fournisseur', tiers: bon });
+    if (bon.conditions_livraison) {
+      doc.font('Helvetica').fontSize(10).fillColor('#555').text(`Conditions de livraison : ${bon.conditions_livraison}`, 50, doc.y);
+      doc.fillColor('#000').moveDown(1);
+    }
+    drawLignesTable(doc, lignes);
+    drawTotal(doc, 'Total', bon.montant_total);
+    doc.end();
   })
 );
 

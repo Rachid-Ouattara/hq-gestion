@@ -4,6 +4,7 @@ import { requirePermission } from '../../middleware/rbac.js';
 import { logAudit } from '../../middleware/audit.js';
 import { query, withTransaction } from '../../db/pool.js';
 import { factureSchema } from './commercial.schemas.js';
+import { newDocument, drawLetterhead, drawDestinataire, drawLignesTable, drawTotal } from '../../lib/pdf/documentPdf.js';
 
 const router = Router();
 
@@ -65,6 +66,41 @@ router.get(
       total_encaisse: totalEncaisse,
       solde: Number(rows[0].montant_total) - totalEncaisse,
     });
+  })
+);
+
+router.get(
+  '/:id/pdf',
+  requirePermission('commercial', 'read'),
+  asyncHandler(async (req, res) => {
+    const { rows } = await query(
+      `SELECT f.*, c.nom, c.contact_nom, c.adresse, c.telephone, c.email, c.numero_fiscal
+         FROM commercial_factures f
+         JOIN commercial_clients c ON c.id = f.client_id
+        WHERE f.id = $1`,
+      [req.params.id]
+    );
+    if (!rows[0]) throw notFound('Facture introuvable');
+    const facture = rows[0];
+    const { rows: lignes } = await query(
+      'SELECT * FROM commercial_factures_lignes WHERE facture_id = $1 ORDER BY created_at ASC',
+      [req.params.id]
+    );
+    const { rows: entrepriseRows } = await query('SELECT * FROM parametres_entreprise WHERE id = 1');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${facture.numero}.pdf"`);
+    const doc = newDocument();
+    doc.pipe(res);
+    drawLetterhead(doc, entrepriseRows[0], {
+      titre: 'FACTURE',
+      numero: facture.numero,
+      date: new Date(facture.date_facture).toLocaleDateString('fr-FR'),
+    });
+    drawDestinataire(doc, { label: 'Facturé à', tiers: facture });
+    drawLignesTable(doc, lignes);
+    drawTotal(doc, 'Total', facture.montant_total);
+    doc.end();
   })
 );
 

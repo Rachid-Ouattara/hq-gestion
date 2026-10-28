@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ShieldCheck, UserCog, LogOut, X } from 'lucide-react';
+import { Building2, LayoutDashboard, ShieldCheck, UserCog, LogOut, X } from 'lucide-react';
 import { get } from '../lib/api.js';
 import { useAuth } from '../lib/auth.jsx';
 import { moduleIcon } from '../lib/moduleIcons.js';
@@ -75,6 +75,9 @@ export default function Sidebar({ open, onClose }) {
             </NavLink>
             <NavLink to="/admin/roles" className={linkClass}>
               <ShieldCheck size={18} /> Rôles & droits
+            </NavLink>
+            <NavLink to="/admin/parametres" className={linkClass}>
+              <Building2 size={18} /> Paramètres entreprise
             </NavLink>
           </>
         )}

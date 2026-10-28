@@ -6,6 +6,7 @@ import { errorHandler, notFoundHandler } from './middleware/error.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import usersRoutes from './modules/users/users.routes.js';
 import rolesRoutes from './modules/roles/roles.routes.js';
+import settingsRoutes from './modules/settings/settings.routes.js';
 import attachmentsRoutes from './modules/attachments/attachments.routes.js';
 import notificationsRoutes from './modules/notifications/notifications.routes.js';
 import reportingRoutes from './modules/reporting/reporting.routes.js';
@@ -34,6 +35,7 @@ export function createApp() {
   app.use('/api/auth', authRoutes);
   app.use('/api/users', usersRoutes);
   app.use('/api/roles', rolesRoutes);
+  app.use('/api/settings', settingsRoutes);
   app.use('/api/attachments', attachmentsRoutes);
   app.use('/api/notifications', notificationsRoutes);
   app.use('/api/reporting', reportingRoutes);

@@ -4,6 +4,7 @@ import { requirePermission } from '../../middleware/rbac.js';
 import { logAudit } from '../../middleware/audit.js';
 import { query } from '../../db/pool.js';
 import { paieSchema } from './rh.schemas.js';
+import { newDocument, drawLetterhead, drawTotal } from '../../lib/pdf/documentPdf.js';
 
 const router = Router();
 
@@ -48,6 +49,47 @@ router.get(
     );
     if (!rows[0]) throw notFound('Paie introuvable');
     res.json(rows[0]);
+  })
+);
+
+router.get(
+  '/:id/pdf',
+  requirePermission('rh_paie', 'read'),
+  asyncHandler(async (req, res) => {
+    const { rows } = await query(
+      `SELECT p.*, e.nom, e.prenom, e.matricule, e.poste, e.departement
+         FROM rh_paies p JOIN rh_employes e ON e.id = p.employe_id
+        WHERE p.id = $1`,
+      [req.params.id]
+    );
+    if (!rows[0]) throw notFound('Paie introuvable');
+    const paie = rows[0];
+    const { rows: entrepriseRows } = await query('SELECT * FROM parametres_entreprise WHERE id = 1');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${paie.numero}.pdf"`);
+    const doc = newDocument();
+    doc.pipe(res);
+    drawLetterhead(doc, entrepriseRows[0], {
+      titre: 'BULLETIN DE PAIE',
+      numero: paie.numero,
+      date: `Période : ${paie.periode}`,
+    });
+
+    doc.font('Helvetica-Bold').fontSize(9).fillColor('#888').text('EMPLOYÉ', 50, doc.y);
+    doc.font('Helvetica-Bold').fontSize(11).fillColor('#000').text(`${paie.nom} ${paie.prenom}`, 50, doc.y + 3);
+    doc.font('Helvetica').fontSize(9).fillColor('#555');
+    const lignesEmploye = [`Matricule : ${paie.matricule}`, paie.poste, paie.departement].filter(Boolean);
+    doc.text(lignesEmploye.join('\n'), 50, doc.y + 2, { width: 300 });
+    doc.fillColor('#000').moveDown(2);
+
+    drawTotal(doc, 'Salaire de base', paie.salaire_base, { bold: false });
+    drawTotal(doc, 'Primes', paie.primes, { bold: false });
+    drawTotal(doc, 'Déductions', -paie.deductions, { bold: false });
+    doc.moveTo(350, doc.y).lineTo(545, doc.y).strokeColor('#ddd').stroke();
+    doc.moveDown(0.5);
+    drawTotal(doc, 'Salaire net', paie.salaire_net);
+    doc.end();
   })
 );
 

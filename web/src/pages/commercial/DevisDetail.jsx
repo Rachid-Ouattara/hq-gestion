@@ -1,8 +1,8 @@
 import DetailSkeleton from '../../components/DetailSkeleton.jsx';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, ShoppingCart, Send, XCircle } from 'lucide-react';
-import { get, post } from '../../lib/api.js';
+import { ArrowLeft, CheckCircle2, FileDown, ShoppingCart, Send, XCircle } from 'lucide-react';
+import { get, post, downloadFile } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
@@ -37,6 +37,14 @@ export default function DevisDetail() {
 
   const creerCommande = () => navigate(`/modules/commercial/commandes?devis_id=${id}`);
 
+  const telechargerPdf = async () => {
+    try {
+      await downloadFile(`/commercial/devis/${id}/pdf`, `${devis.numero}.pdf`);
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
   if (!devis) return error ? <p className="text-slate-500">{error}</p> : <DetailSkeleton />;
 
   return (
@@ -54,6 +62,7 @@ export default function DevisDetail() {
           <p className="text-sm text-slate-500">{devis.client_nom} — {devis.objet}</p>
         </div>
         <div className="flex gap-2">
+          <button className="btn-ghost" onClick={telechargerPdf}><FileDown size={16} /> Télécharger PDF</button>
           {devis.statut === 'brouillon' && canUpdate && (
             <button className="btn-accent" onClick={() => action('envoyer')}>
               <Send size={16} /> Envoyer au client

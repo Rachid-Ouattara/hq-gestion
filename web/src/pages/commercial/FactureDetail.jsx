@@ -1,8 +1,8 @@
 import DetailSkeleton from '../../components/DetailSkeleton.jsx';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, Ban, Wallet } from 'lucide-react';
-import { get, post } from '../../lib/api.js';
+import { ArrowLeft, Ban, FileDown, Wallet } from 'lucide-react';
+import { get, post, downloadFile } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
 import StatusBadge from '../../components/StatusBadge.jsx';
@@ -36,6 +36,14 @@ export default function FactureDetail() {
     }
   };
 
+  const telechargerPdf = async () => {
+    try {
+      await downloadFile(`/commercial/factures/${id}/pdf`, `${facture.numero}.pdf`);
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
   if (!facture) return error ? <p className="text-slate-500">{error}</p> : <DetailSkeleton />;
 
   return (
@@ -53,6 +61,7 @@ export default function FactureDetail() {
           <p className="text-sm text-slate-500">{facture.client_nom}{facture.commande_numero ? ` · issue de ${facture.commande_numero}` : ''}</p>
         </div>
         <div className="flex gap-2">
+          <button className="btn-ghost" onClick={telechargerPdf}><FileDown size={16} /> Télécharger PDF</button>
           {facture.statut === 'emise' && canDelete && (
             <button className="btn-ghost" onClick={annuler}><Ban size={16} /> Annuler</button>
           )}

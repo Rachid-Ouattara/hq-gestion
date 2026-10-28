@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Plus } from 'lucide-react';
-import { get, post } from '../../lib/api.js';
+import { FileDown, Plus } from 'lucide-react';
+import { get, post, downloadFile } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth.jsx';
 import { useToast } from '../../lib/toast.jsx';
 import DataTable from '../../components/DataTable.jsx';
@@ -58,21 +58,34 @@ export default function Paies() {
     }
   };
 
+  const telechargerPdf = async (row) => {
+    try {
+      await downloadFile(`/rh/paies/${row.id}/pdf`, `${row.numero}.pdf`);
+    } catch (e) {
+      toast.error(e.message);
+    }
+  };
+
   const columns = [
     { key: 'numero', label: 'N°' },
     { key: 'employe_nom', label: 'Employé', render: (p) => `${p.employe_nom} ${p.employe_prenom}` },
     { key: 'periode', label: 'Période' },
     { key: 'salaire_net', label: 'Salaire net', render: (p) => Number(p.salaire_net).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) },
     { key: 'statut', label: 'Statut', render: (p) => <StatusBadge status={p.statut} map={PAIE_STATUT} /> },
-    ...(canUpdate
-      ? [{
-          key: 'actions',
-          label: '',
-          render: (p) => p.statut === 'brouillon' && (
+    {
+      key: 'actions',
+      label: '',
+      render: (p) => (
+        <div className="flex items-center justify-end gap-3">
+          {canUpdate && p.statut === 'brouillon' && (
             <button className="text-xs text-hq-blue hover:underline" onClick={() => payer(p)}>Marquer payée</button>
-          ),
-        }]
-      : []),
+          )}
+          <button className="text-slate-400 hover:text-hq-blue" title="Télécharger PDF" onClick={() => telechargerPdf(p)}>
+            <FileDown size={16} />
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (

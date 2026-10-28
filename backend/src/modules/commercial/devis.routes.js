@@ -4,6 +4,7 @@ import { requirePermission } from '../../middleware/rbac.js';
 import { logAudit } from '../../middleware/audit.js';
 import { query, withTransaction } from '../../db/pool.js';
 import { devisSchema } from './commercial.schemas.js';
+import { newDocument, drawLetterhead, drawDestinataire, drawLignesTable, drawTotal } from '../../lib/pdf/documentPdf.js';
 
 const router = Router();
 
@@ -53,6 +54,43 @@ router.get(
       [req.params.id]
     );
     res.json({ ...rows[0], lignes });
+  })
+);
+
+router.get(
+  '/:id/pdf',
+  requirePermission('commercial', 'read'),
+  asyncHandler(async (req, res) => {
+    const { rows } = await query(
+      `SELECT d.*, c.nom, c.contact_nom, c.adresse, c.telephone, c.email, c.numero_fiscal
+         FROM commercial_devis d JOIN commercial_clients c ON c.id = d.client_id
+        WHERE d.id = $1`,
+      [req.params.id]
+    );
+    if (!rows[0]) throw notFound('Devis introuvable');
+    const devis = rows[0];
+    const { rows: lignes } = await query(
+      'SELECT * FROM commercial_devis_lignes WHERE devis_id = $1 ORDER BY created_at ASC',
+      [req.params.id]
+    );
+    const { rows: entrepriseRows } = await query('SELECT * FROM parametres_entreprise WHERE id = 1');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${devis.numero}.pdf"`);
+    const doc = newDocument();
+    doc.pipe(res);
+    drawLetterhead(doc, entrepriseRows[0], {
+      titre: 'DEVIS',
+      numero: devis.numero,
+      date: new Date(devis.date_devis).toLocaleDateString('fr-FR'),
+    });
+    drawDestinataire(doc, { label: 'Devis pour', tiers: devis });
+    doc.font('Helvetica').fontSize(10).fillColor('#555').text(`Objet : ${devis.objet}`, 50, doc.y);
+    doc.fillColor('#000').moveDown(1);
+    drawLignesTable(doc, lignes);
+    drawTotal(doc, 'Total', devis.montant_total);
+    doc.font('Helvetica').fontSize(9).fillColor('#888').text(`Validité : ${devis.validite_jours} jours`, 50, doc.y);
+    doc.end();
   })
 );
 
